@@ -1,0 +1,204 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Welcome to BioDynaMo",
+            "title": "Home"
+        },
+        {
+            "location": "/#welcome-to-biodynamo",
+            "text": "",
+            "title": "Welcome to BioDynaMo"
+        },
+        {
+            "location": "/installation/",
+            "text": "Getting Started\n\n\nInstallation\n\n\nThere are two kinds of installations for BioDynaMo: \nuser installation\n and\n\ndevelopers installation\n. Currently supported platforms are Linux Ubuntu and\nMac OS X. \n\n\n\n\n\nUbuntu\n\n\nsudo snap install --classic --edge biodynamo\n\n\n\n\n\nMac OS\n\n\nbrew install Biodynamo/biodynamo/biodynamo",
+            "title": "Installation"
+        },
+        {
+            "location": "/installation/#getting-started",
+            "text": "",
+            "title": "Getting Started"
+        },
+        {
+            "location": "/installation/#installation",
+            "text": "There are two kinds of installations for BioDynaMo:  user installation  and developers installation . Currently supported platforms are Linux Ubuntu and\nMac OS X.",
+            "title": "Installation"
+        },
+        {
+            "location": "/installation/#ubuntu",
+            "text": "sudo snap install --classic --edge biodynamo",
+            "title": "Ubuntu"
+        },
+        {
+            "location": "/installation/#mac-os",
+            "text": "brew install Biodynamo/biodynamo/biodynamo",
+            "title": "Mac OS"
+        },
+        {
+            "location": "/usage/",
+            "text": "Usage\n\n\nSetting up the Command Line Interface\n\n\nSetting up a simulation and running it is done with the BioDynaMo command line\ninterface (CLI). In order for the CLI to be available in your shell environment\nit is necessary to run the following command:\n\n\nsource\n biodynamo\n\n\n\n\n\nBasic Workflow\n\n\nA basic BioDynaMo workflow looks as follows:\n\n\n1. Create a new project\n\n\nTo create a new project run the following command:\n\n\nbiodynamo new <enter_name>\n\n\n\n\n\nThis command creates a new Git repository for you with the name specified\nin the \n<enter_name>\n placeholder. It will ask you to login with your Github\ncredentials to make your project files remotely accessible. You will see a folder appear with the same\nname, containing some template files to get you started.\n\n\n\n\nTip\n\n\nIf you wish not to have your Github account linked to your project you can\nappend the \n--no-github\n option to the command. You will however not be able\nto use the \nbiodynamo assist\n command as explained below.\n\n\n\n\n2. Implement your model\n\n\nThe provided template files in your newly created folder can be used as a\nstarting point for your simulation. The \nsrc\n directory contains the files with\nthe source code that defines the simulation. You can edit and add the code that\ndescribes your model in this folder.\n\n\nTo find out about the features that BioDynaMo offers, please check out the \nDocumentation\n.\nFor example projects, see the \nExercises\n\n\n3. Run the simulation\n\n\nBuilding the simulation and running it can be done with the command:\n\n\nbiodynamo run\n\n\n\n\n\nAll your source code will be compiled and linked against the BioDynaMo libraries, and an executable file\nwill be created and run. It is at this point you might encounter compilation errors.\nYou will need to fix them before the simulation can actually run.\n\n\nRequest assistance\n\n\nIt can happen that you encounter an error or issue that you cannot solve on your own. \nOr you might be convinced that there is a bug in BioDynaMo. \nFor such occasions we have provided you with BioDynaMo assistance:\n\n\nbiodynamo assist\n\n\n\n\n\nThis command will create a folder called \ndebug\n in which debug information will be collected.\nA git branch will be created and uploaded to Github. Send the link to this branch to us, \nso we can take a look at the issue. Check out \nContact\n on how to contact us.",
+            "title": "Usage"
+        },
+        {
+            "location": "/usage/#usage",
+            "text": "",
+            "title": "Usage"
+        },
+        {
+            "location": "/usage/#setting-up-the-command-line-interface",
+            "text": "Setting up a simulation and running it is done with the BioDynaMo command line\ninterface (CLI). In order for the CLI to be available in your shell environment\nit is necessary to run the following command:  source  biodynamo",
+            "title": "Setting up the Command Line Interface"
+        },
+        {
+            "location": "/usage/#basic-workflow",
+            "text": "A basic BioDynaMo workflow looks as follows:",
+            "title": "Basic Workflow"
+        },
+        {
+            "location": "/usage/#1-create-a-new-project",
+            "text": "To create a new project run the following command:  biodynamo new <enter_name>  This command creates a new Git repository for you with the name specified\nin the  <enter_name>  placeholder. It will ask you to login with your Github\ncredentials to make your project files remotely accessible. You will see a folder appear with the same\nname, containing some template files to get you started.   Tip  If you wish not to have your Github account linked to your project you can\nappend the  --no-github  option to the command. You will however not be able\nto use the  biodynamo assist  command as explained below.",
+            "title": "1. Create a new project"
+        },
+        {
+            "location": "/usage/#2-implement-your-model",
+            "text": "The provided template files in your newly created folder can be used as a\nstarting point for your simulation. The  src  directory contains the files with\nthe source code that defines the simulation. You can edit and add the code that\ndescribes your model in this folder.  To find out about the features that BioDynaMo offers, please check out the  Documentation .\nFor example projects, see the  Exercises",
+            "title": "2. Implement your model"
+        },
+        {
+            "location": "/usage/#3-run-the-simulation",
+            "text": "Building the simulation and running it can be done with the command:  biodynamo run  All your source code will be compiled and linked against the BioDynaMo libraries, and an executable file\nwill be created and run. It is at this point you might encounter compilation errors.\nYou will need to fix them before the simulation can actually run.",
+            "title": "3. Run the simulation"
+        },
+        {
+            "location": "/usage/#request-assistance",
+            "text": "It can happen that you encounter an error or issue that you cannot solve on your own. \nOr you might be convinced that there is a bug in BioDynaMo. \nFor such occasions we have provided you with BioDynaMo assistance:  biodynamo assist  This command will create a folder called  debug  in which debug information will be collected.\nA git branch will be created and uploaded to Github. Send the link to this branch to us, \nso we can take a look at the issue. Check out  Contact  on how to contact us.",
+            "title": "Request assistance"
+        },
+        {
+            "location": "/hello_world/",
+            "text": "The most basic BioDynaMo simulation (i.e. our Hello World program) is a\nstatic single cell. It is the default model that comes with the installation of\nBioDynaMo. In this section we shall go over the three simple steps of running\nthis simple simulation.\n\n\nStep 1: Create your simulation\n\n\nIn your terminal (if you haven't already) initialize the environment for BioDynaMo with:\n\n\nsource\n biodynamo\n\n\n\n\n\nRun the following command to create a new project called \"hello_world\":\n\n\nbiodynamo new hello_world\n\n\n\n\n\nLog in with your Github account when prompted. Or append \n--no-github\n if you\ndo not want this.\n\n\nStep 2: Build your simulation\n\n\nGo into the newly created directory \nhello_world\n with:\n\n\ncd\n hello_world\n\n\n\n\n\nAnd build the project files with:\n\n\nbiodynamo build\n\n\n\n\n\nStep 3: Run your simulation\n\n\nbiodynamo run\n\n\n\n\n\nYou should see \"Simulation completed succesfully\" as the output.\n\n\nExtra: Cell division\n\n\nLet's make the simulation more interesting by adding a biological behavior to the\ncell: cell division. Open the \nsrc/hello_world.h\n\n\nReplace the \nCompileTimeParameters\n struct with the following one:\n\n\ntemplate\n \n<\ntypename\n \nBackend\n>\n\n\nstruct\n \nCompileTimeParam\n \n:\n \npublic\n \nDefaultCompileTimeParam\n<\nBackend\n>\n \n{\n\n  \nusing\n \nBiologyModules\n \n=\n \nVariant\n<\nGrowDivide\n>\n;\n\n\n};\n\n\n\n\n\n\nAnd add the following line to the \nconstruct\n function:\n\n\ncell\n.\nAddBiologyModule\n(\nGrowDivide\n());\n\n\n\n\n\n\nRebuild and rerun the simulation to have the cell division take effect. visit the\nnext exercise to learn about the visualization features of BioDynaMo.\n\n\n\n\nInfo\n\n\nYou might want to run for a few more simulation steps to witness cells dividing",
+            "title": "Hello World"
+        },
+        {
+            "location": "/hello_world/#step-1-create-your-simulation",
+            "text": "In your terminal (if you haven't already) initialize the environment for BioDynaMo with:  source  biodynamo  Run the following command to create a new project called \"hello_world\":  biodynamo new hello_world  Log in with your Github account when prompted. Or append  --no-github  if you\ndo not want this.",
+            "title": "Step 1: Create your simulation"
+        },
+        {
+            "location": "/hello_world/#step-2-build-your-simulation",
+            "text": "Go into the newly created directory  hello_world  with:  cd  hello_world  And build the project files with:  biodynamo build",
+            "title": "Step 2: Build your simulation"
+        },
+        {
+            "location": "/hello_world/#step-3-run-your-simulation",
+            "text": "biodynamo run  You should see \"Simulation completed succesfully\" as the output.",
+            "title": "Step 3: Run your simulation"
+        },
+        {
+            "location": "/hello_world/#extra-cell-division",
+            "text": "Let's make the simulation more interesting by adding a biological behavior to the\ncell: cell division. Open the  src/hello_world.h  Replace the  CompileTimeParameters  struct with the following one:  template   < typename   Backend >  struct   CompileTimeParam   :   public   DefaultCompileTimeParam < Backend >   { \n   using   BiologyModules   =   Variant < GrowDivide > ;  };   And add the following line to the  construct  function:  cell . AddBiologyModule ( GrowDivide ());   Rebuild and rerun the simulation to have the cell division take effect. visit the\nnext exercise to learn about the visualization features of BioDynaMo.   Info  You might want to run for a few more simulation steps to witness cells dividing",
+            "title": "Extra: Cell division"
+        },
+        {
+            "location": "/visualization/",
+            "text": "Enabling visualization is very easy. BioDynaMo can be configured through its own\nconfiguration file: \nbdm.toml\n. Visualization is just one of the many configuration\noptions. Let's take a look at how to set it.\n\n\nCreate a bdm.toml file\n\n\nIn your build directory (e.g. hello_world/build) create a new file called \nbdm.toml\n.\nYou can also do this from the command line with the following command:\n\n\ntouch /path/to/hello_world/build/bdm.toml\n\n\n\n\n\nExport visualization files\n\n\nOne way to enable visualization is to export a visualization file every time step \n(or every N time steps). In the \nbmd.toml\n file add the following lines:\n\n\n[visualization]\n\n\nexport\n \n=\n \ntrue\n\n\nexport_interval\n \n=\n \n1\n\n\n\n\n\n\nThis will export a visualization file every time step. You can set the frequency\nby setting the \nexport_interval\n. Now we need to open ParaView:\n\n\nparaview\n\n\n\n\n\nAnd select \"Open\" as shown below:\n\n\n\n\nThen select the files that represent your simulation objects. If you have \noutput over multiple timesteps, import your simulation objects as \"Group\", as\nshown in the image below:\n\n\n\n\nApply any of ParaView's built-in filters to your input data. To render the output\npress on the \"eye\" icon next in the Pipeline Browser:",
+            "title": "Visualization"
+        },
+        {
+            "location": "/visualization/#create-a-bdmtoml-file",
+            "text": "In your build directory (e.g. hello_world/build) create a new file called  bdm.toml .\nYou can also do this from the command line with the following command:  touch /path/to/hello_world/build/bdm.toml",
+            "title": "Create a bdm.toml file"
+        },
+        {
+            "location": "/visualization/#export-visualization-files",
+            "text": "One way to enable visualization is to export a visualization file every time step \n(or every N time steps). In the  bmd.toml  file add the following lines:  [visualization]  export   =   true  export_interval   =   1   This will export a visualization file every time step. You can set the frequency\nby setting the  export_interval . Now we need to open ParaView:  paraview  And select \"Open\" as shown below:   Then select the files that represent your simulation objects. If you have \noutput over multiple timesteps, import your simulation objects as \"Group\", as\nshown in the image below:   Apply any of ParaView's built-in filters to your input data. To render the output\npress on the \"eye\" icon next in the Pipeline Browser:",
+            "title": "Export visualization files"
+        },
+        {
+            "location": "/diffusion/",
+            "text": "One of BioDynaMo's built-in biological processes is extracellular diffusion.\nIt is the process of extracellular substances diffusion through space. The constants\nthat govern the diffusion process can be set by the user. Let's go through an\nexample where diffusion plays a roll.\n\n\nDownload the code from Github\n\n\ngit clone https://github.com/BioDynaMo/simulation-templates.git\ngit checkout newcastle\n\n\n\n\n\nInspect the code\n\n\nGo into the \ndiffusion\n directory and open the source file \nsrc/diffusion.h\n in your favorite editor. \nWe can note the following things from its content:\n\n\n1. List the substances\n\n\nenum\n \nSubstances\n \n{\n \nkKalium\n \n};\n\n\n\n\n\n\nThe extracellular substances that will be used in the simulation are listed in\nan \nenum\n data structure. In this case it is just a single substance. Per C++ \nconvention we will prepend the substance's name with the letter \"k\".\n\n\n2. Set up the biology modules\n\n\nIn order for BioDynaMo to anticipate the biology modules that you want to use in\nthe simulation, we need to declare them in our \nCompileTimeParameters\n as such:\n\n\ntemplate\n \n<\ntypename\n \nBackend\n>\n\n\nstruct\n \nCompileTimeParam\n \n:\n \npublic\n \nDefaultCompileTimeParam\n<\nBackend\n>\n \n{\n\n  \nusing\n \nBiologyModules\n \n=\n \nVariant\n<\nChemotaxis\n,\n \nKaliumSecretion\n>\n;\n\n\n};\n\n\n\n\n\n\nThe relevant part to take note of is the mentioning of the \nChemotaxis\n and\n\nKaliumSecretion\n biology modules. These are the modules that will govern the\nbehavior of the simulation objects (i.e. cells). We import them at the top of the\nsource code with \n#include diffusion_biology_modules\n.\n\n\n3. Set up the simulation objects\n\n\nNext up is creating simulation objects:\n\n\n  \nauto\n \nconstruct\n \n=\n \n[](\nconst\n \nstd\n::\narray\n<\ndouble\n,\n \n3\n>&\n \nposition\n)\n \n{\n\n    \nCell\n \ncell\n(\nposition\n);\n\n    \ncell\n.\nSetDiameter\n(\n30\n);\n\n    \ncell\n.\nSetMass\n(\n1.0\n);\n\n    \ncell\n.\nAddBiologyModule\n(\nChemotaxis\n());\n\n    \nstd\n::\narray\n<\ndouble\n,\n \n3\n>\n \nsecretion_position\n \n=\n \n{{\n50\n,\n \n50\n,\n \n50\n}};\n\n    \nif\n \n(\nposition\n \n==\n \nsecretion_position\n)\n \n{\n\n      \ncell\n.\nAddBiologyModule\n(\nKaliumSecretion\n());\n\n    \n}\n\n    \nreturn\n \ncell\n;\n\n  \n};\n\n  \nstd\n::\nvector\n<\nstd\n::\narray\n<\ndouble\n,\n \n3\n>>\n \npositions\n;\n\n  \npositions\n.\npush_back\n({\n0\n,\n \n0\n,\n \n0\n});\n\n  \npositions\n.\npush_back\n({\n100\n,\n \n0\n,\n \n0\n});\n\n  \npositions\n.\npush_back\n({\n0\n,\n \n100\n,\n \n0\n});\n\n  \npositions\n.\npush_back\n({\n0\n,\n \n0\n,\n \n100\n});\n\n  \npositions\n.\npush_back\n({\n0\n,\n \n100\n,\n \n100\n});\n\n  \npositions\n.\npush_back\n({\n100\n,\n \n0\n,\n \n100\n});\n\n  \npositions\n.\npush_back\n({\n100\n,\n \n100\n,\n \n0\n});\n\n  \npositions\n.\npush_back\n({\n100\n,\n \n100\n,\n \n100\n});\n\n  \n// the cell responsible for secretion\n\n  \npositions\n.\npush_back\n({\n50\n,\n \n50\n,\n \n50\n});\n\n  \nModelInitializer\n::\nCreateCells\n(\npositions\n,\n \nconstruct\n);\n\n\n\n\n\n\nThe \nconstruct\n defines the properties of each cell that we create. These can be\nphysical properties (diameter, mass), but also biological properties and behaviors\n(chemotaxis, substance secretion)\n\n\nIn this example, each cell is assigned the \nChemotaxis\n behavior. In \ndiffusion_biology_behaviors.h\n you can\ncheck the source code of this module. Basically it makes cells move according to the gradient,\ncaused by a concentration difference of the substance. One of the cells\n(the cell at position {50, 50, 50}) will be the one secreting the substance;\nit therefore gets assigned the \nSubstanceSecretion\n behavior.\n\n\nFurthermore, we define the initial positions of the cells. In this example it is\ndone explicitly, but one could also generate a grid of cells, or a random distribution\nof cells.\n\n\nConfigure the simulation\n\n\nCreate a \nbdm.toml\n file in the \ndiffusion\n directory, and create the following\nconfiguration file:\n\n\n[visualization]\n\n\nexport\n \n=\n \ntrue\n\n\nexport_interval\n \n=\n \n10\n\n\n    \n[[visualize_sim_object]]\n\n    \nname\n \n=\n \n\"Cell\"\n\n\n    additional_data_members = [ \"diameter_\" ]\n\n\n    \n[[visualize_diffusion]]\n\n    \nname\n \n=\n \n\"Kalium\"\n\n\n    gradient = true\n\n\n\n\n\n\nThis will enable exporting visualization files, so that we can visualize the\nsimulation after it has finished. Furthermore, we enable the output of the diameter\nof our simulation objects (by default named \"Cell\"), and the gradient data of the\nextracellular diffusion\n\n\nBuild and run the simulation\n\n\nRun the following commands to build and run the simulation (do not forget to\n\nbiodynamo source\n if you haven't already in your terminal):\n\n\nbiodynamo build\nbiodynamo run\n\n\n\n\n\nVisualize the simulation\n\n\nOpen ParaView and navigate to the \ndiffusion\n directory. Open the \ncells_data_*\n\nand \nKalium_*\n files as Group (see the Visualization exercise as a reference).\n\n\nClick on the \ncells_data_\n entry in the Pipeline Browser. From \"Filters\", select\n\"Search\" (or do Ctrl + Space). Search for the \"Glyph\" filter, Apply it, and set\nthe following properties:\n\n\nGlyph\n \nType\n      \n=\n \n'Sphere'\n\n\nScalars\n         \n=\n \n'Diameters'\n\n\nScale\n \nMode\n      \n=\n \n'Scalar'\n\n\nScale\n \nFactor\n    \n=\n \n1\n\n\nGlyph\n \nMode\n      \n=\n \n'All Points'\n\n\n\n\n\n\nAnd hit Apply. You might need to 'Zoom to Fit'. Hit the Play button on the top of\nthe interface to play the simulation over time.",
+            "title": "Diffusion"
+        },
+        {
+            "location": "/diffusion/#download-the-code-from-github",
+            "text": "git clone https://github.com/BioDynaMo/simulation-templates.git\ngit checkout newcastle",
+            "title": "Download the code from Github"
+        },
+        {
+            "location": "/diffusion/#inspect-the-code",
+            "text": "Go into the  diffusion  directory and open the source file  src/diffusion.h  in your favorite editor. \nWe can note the following things from its content:",
+            "title": "Inspect the code"
+        },
+        {
+            "location": "/diffusion/#1-list-the-substances",
+            "text": "enum   Substances   {   kKalium   };   The extracellular substances that will be used in the simulation are listed in\nan  enum  data structure. In this case it is just a single substance. Per C++ \nconvention we will prepend the substance's name with the letter \"k\".",
+            "title": "1. List the substances"
+        },
+        {
+            "location": "/diffusion/#2-set-up-the-biology-modules",
+            "text": "In order for BioDynaMo to anticipate the biology modules that you want to use in\nthe simulation, we need to declare them in our  CompileTimeParameters  as such:  template   < typename   Backend >  struct   CompileTimeParam   :   public   DefaultCompileTimeParam < Backend >   { \n   using   BiologyModules   =   Variant < Chemotaxis ,   KaliumSecretion > ;  };   The relevant part to take note of is the mentioning of the  Chemotaxis  and KaliumSecretion  biology modules. These are the modules that will govern the\nbehavior of the simulation objects (i.e. cells). We import them at the top of the\nsource code with  #include diffusion_biology_modules .",
+            "title": "2. Set up the biology modules"
+        },
+        {
+            "location": "/diffusion/#3-set-up-the-simulation-objects",
+            "text": "Next up is creating simulation objects:     auto   construct   =   []( const   std :: array < double ,   3 >&   position )   { \n     Cell   cell ( position ); \n     cell . SetDiameter ( 30 ); \n     cell . SetMass ( 1.0 ); \n     cell . AddBiologyModule ( Chemotaxis ()); \n     std :: array < double ,   3 >   secretion_position   =   {{ 50 ,   50 ,   50 }}; \n     if   ( position   ==   secretion_position )   { \n       cell . AddBiologyModule ( KaliumSecretion ()); \n     } \n     return   cell ; \n   }; \n   std :: vector < std :: array < double ,   3 >>   positions ; \n   positions . push_back ({ 0 ,   0 ,   0 }); \n   positions . push_back ({ 100 ,   0 ,   0 }); \n   positions . push_back ({ 0 ,   100 ,   0 }); \n   positions . push_back ({ 0 ,   0 ,   100 }); \n   positions . push_back ({ 0 ,   100 ,   100 }); \n   positions . push_back ({ 100 ,   0 ,   100 }); \n   positions . push_back ({ 100 ,   100 ,   0 }); \n   positions . push_back ({ 100 ,   100 ,   100 }); \n   // the cell responsible for secretion \n   positions . push_back ({ 50 ,   50 ,   50 }); \n   ModelInitializer :: CreateCells ( positions ,   construct );   The  construct  defines the properties of each cell that we create. These can be\nphysical properties (diameter, mass), but also biological properties and behaviors\n(chemotaxis, substance secretion)  In this example, each cell is assigned the  Chemotaxis  behavior. In  diffusion_biology_behaviors.h  you can\ncheck the source code of this module. Basically it makes cells move according to the gradient,\ncaused by a concentration difference of the substance. One of the cells\n(the cell at position {50, 50, 50}) will be the one secreting the substance;\nit therefore gets assigned the  SubstanceSecretion  behavior.  Furthermore, we define the initial positions of the cells. In this example it is\ndone explicitly, but one could also generate a grid of cells, or a random distribution\nof cells.",
+            "title": "3. Set up the simulation objects"
+        },
+        {
+            "location": "/diffusion/#configure-the-simulation",
+            "text": "Create a  bdm.toml  file in the  diffusion  directory, and create the following\nconfiguration file:  [visualization]  export   =   true  export_interval   =   10 \n\n     [[visualize_sim_object]] \n     name   =   \"Cell\"      additional_data_members = [ \"diameter_\" ] \n\n     [[visualize_diffusion]] \n     name   =   \"Kalium\"      gradient = true   This will enable exporting visualization files, so that we can visualize the\nsimulation after it has finished. Furthermore, we enable the output of the diameter\nof our simulation objects (by default named \"Cell\"), and the gradient data of the\nextracellular diffusion",
+            "title": "Configure the simulation"
+        },
+        {
+            "location": "/diffusion/#build-and-run-the-simulation",
+            "text": "Run the following commands to build and run the simulation (do not forget to biodynamo source  if you haven't already in your terminal):  biodynamo build\nbiodynamo run",
+            "title": "Build and run the simulation"
+        },
+        {
+            "location": "/diffusion/#visualize-the-simulation",
+            "text": "Open ParaView and navigate to the  diffusion  directory. Open the  cells_data_* \nand  Kalium_*  files as Group (see the Visualization exercise as a reference).  Click on the  cells_data_  entry in the Pipeline Browser. From \"Filters\", select\n\"Search\" (or do Ctrl + Space). Search for the \"Glyph\" filter, Apply it, and set\nthe following properties:  Glyph   Type        =   'Sphere'  Scalars           =   'Diameters'  Scale   Mode        =   'Scalar'  Scale   Factor      =   1  Glyph   Mode        =   'All Points'   And hit Apply. You might need to 'Zoom to Fit'. Hit the Play button on the top of\nthe interface to play the simulation over time.",
+            "title": "Visualize the simulation"
+        },
+        {
+            "location": "/soma_clustering/",
+            "text": "Let's take a look at a more realistic example called soma clustering. In this\nexample, we create two types of cells. Each type of cell secretes a specific substance,\nand moves along the gradient of its corresponding substance. This will form clusters\nof cells that are of the same type.\n\n\nDownload the code from Github\n\n\nIf you have not done already, download the code from github:\n\n\ngit clone https://github.com/BioDynaMo/simulation-templates.git\ngit checkout newcastle\n\n\n\n\n\nInspect the code\n\n\nGo into the \nsoma_clustering\n directory and open the source file \nsrc/soma_clustering.h\n in your favorite editor. \nWe can note the following things from its content:\n\n\n1. Creating a custom simulation object\n\n\nIn \nsrc/my_cell.h\n we can find the following code:\n\n\nBDM_SIM_OBJECT\n(\nMyCell\n,\n \nCell\n)\n \n{\n\n  \nBDM_SIM_OBJECT_HEADER\n(\nMyCellExt\n,\n \n1\n,\n \ncell_type_\n);\n\n\n \npublic\n:\n\n  \nMyCellExt\n()\n \n{}\n\n  \nMyCellExt\n(\nconst\n \nstd\n::\narray\n<\ndouble\n,\n \n3\n>&\n \nposition\n)\n \n:\n \nBase\n(\nposition\n)\n \n{}\n\n\n  \nvoid\n \nSetCellType\n(\nint\n \nt\n)\n \n{\n \ncell_type_\n[\nkIdx\n]\n \n=\n \nt\n;\n \n}\n\n  \nint\n \nGetCellType\n()\n \nconst\n \n{\n \nreturn\n \ncell_type_\n[\nkIdx\n];\n \n}\n\n\n \nprivate\n:\n\n  \nvec\n<\nint\n>\n \ncell_type_\n;\n\n\n\n\n\n\nWe create a new type of cell called \"MyCell\" that extends the default Cell.\nIt contains a new data member called \ncell_type_\n that makes it possible to assign\na type to a cell.\n\n\n2. Define substances and biology modules\n\n\nIn \nsrc/soma_clustering_biology_modules.h\n we can find the listing of the two substances\nthat are used in this simulation:\n\n\nenum\n \nSubstances\n \n{\n \nkSubstance_0\n,\n \nkSubstance_1\n \n};\n\n\n\n\n\n\nWe can also find the biology modules that were used in the Diffusion exercise.\n\n\nConfigure the simulation\n\n\nCreate a \nbdm.toml\n file in the \ndiffusion\n directory, and create the following\nconfiguration file:\n\n\n[visualization]\n\n\nexport\n \n=\n \ntrue\n\n\nexport_interval\n \n=\n \n10\n\n\n    \n[[visualize_sim_object]]\n\n    \nname\n \n=\n \n\"MyCell\"\n\n\n    additional_data_members = [ \"diameter_\", \"cell_type_\" ]\n\n\n    \n[[visualize_diffusion]]\n\n    \nname\n \n=\n \n\"Substance_0\"\n\n\n  \n[[visualize_diffusion]]\n\n  \nname\n \n=\n \n\"Substance_1\"\n\n\n\n\n\n\nThis will enable exporting visualization files, so that we can visualize the\nsimulation after it has finished. Furthermore, we enable the output of the diameter\nand the cell type of our simulation objects (named \"MyCell\"), and the two substances\nthat are secreted.\n\n\nBuild and run the simulation\n\n\nRun the following commands to build and run the simulation (do not forget to\n\nbiodynamo source\n if you haven't already in your terminal):\n\n\nbiodynamo build\nbiodynamo run\n\n\n\n\n\nVisualize the simulation\n\n\nOpen ParaView and navigate to the \ndiffusion\n directory. Open the \ncells_data_*\n\nand \nKalium_*\n files as Group (see the Visualization exercise as a reference).\n\n\nClick on the \ncells_data_\n entry in the Pipeline Browser. From \"Filters\", select\n\"Search\" (or do Ctrl + Space). Search for the \"Glyph\" filter, Apply it, and set\nthe following properties:\n\n\nGlyph\n \nType\n      \n=\n \n'Sphere'\n\n\nScalars\n           \n=\n \n'Diameters'\n\n\nScale\n \nMode\n      \n=\n \n'Scalar'\n\n\nScale\n \nFactor\n    \n=\n \n1\n\n\nGlyph\n \nMode\n      \n=\n \n'All Points'\n\n\n\n\n\n\nAnd hit Apply. You might need to 'Zoom to Fit'. Hit the Play button on the top of\nthe interface to play the simulation over time.",
+            "title": "Soma Clustering"
+        },
+        {
+            "location": "/soma_clustering/#download-the-code-from-github",
+            "text": "If you have not done already, download the code from github:  git clone https://github.com/BioDynaMo/simulation-templates.git\ngit checkout newcastle",
+            "title": "Download the code from Github"
+        },
+        {
+            "location": "/soma_clustering/#inspect-the-code",
+            "text": "Go into the  soma_clustering  directory and open the source file  src/soma_clustering.h  in your favorite editor. \nWe can note the following things from its content:",
+            "title": "Inspect the code"
+        },
+        {
+            "location": "/soma_clustering/#1-creating-a-custom-simulation-object",
+            "text": "In  src/my_cell.h  we can find the following code:  BDM_SIM_OBJECT ( MyCell ,   Cell )   { \n   BDM_SIM_OBJECT_HEADER ( MyCellExt ,   1 ,   cell_type_ ); \n\n  public : \n   MyCellExt ()   {} \n   MyCellExt ( const   std :: array < double ,   3 >&   position )   :   Base ( position )   {} \n\n   void   SetCellType ( int   t )   {   cell_type_ [ kIdx ]   =   t ;   } \n   int   GetCellType ()   const   {   return   cell_type_ [ kIdx ];   } \n\n  private : \n   vec < int >   cell_type_ ;   We create a new type of cell called \"MyCell\" that extends the default Cell.\nIt contains a new data member called  cell_type_  that makes it possible to assign\na type to a cell.",
+            "title": "1. Creating a custom simulation object"
+        },
+        {
+            "location": "/soma_clustering/#2-define-substances-and-biology-modules",
+            "text": "In  src/soma_clustering_biology_modules.h  we can find the listing of the two substances\nthat are used in this simulation:  enum   Substances   {   kSubstance_0 ,   kSubstance_1   };   We can also find the biology modules that were used in the Diffusion exercise.",
+            "title": "2. Define substances and biology modules"
+        },
+        {
+            "location": "/soma_clustering/#configure-the-simulation",
+            "text": "Create a  bdm.toml  file in the  diffusion  directory, and create the following\nconfiguration file:  [visualization]  export   =   true  export_interval   =   10 \n\n     [[visualize_sim_object]] \n     name   =   \"MyCell\"      additional_data_members = [ \"diameter_\", \"cell_type_\" ] \n\n     [[visualize_diffusion]] \n     name   =   \"Substance_0\" \n\n   [[visualize_diffusion]] \n   name   =   \"Substance_1\"   This will enable exporting visualization files, so that we can visualize the\nsimulation after it has finished. Furthermore, we enable the output of the diameter\nand the cell type of our simulation objects (named \"MyCell\"), and the two substances\nthat are secreted.",
+            "title": "Configure the simulation"
+        },
+        {
+            "location": "/soma_clustering/#build-and-run-the-simulation",
+            "text": "Run the following commands to build and run the simulation (do not forget to biodynamo source  if you haven't already in your terminal):  biodynamo build\nbiodynamo run",
+            "title": "Build and run the simulation"
+        },
+        {
+            "location": "/soma_clustering/#visualize-the-simulation",
+            "text": "Open ParaView and navigate to the  diffusion  directory. Open the  cells_data_* \nand  Kalium_*  files as Group (see the Visualization exercise as a reference).  Click on the  cells_data_  entry in the Pipeline Browser. From \"Filters\", select\n\"Search\" (or do Ctrl + Space). Search for the \"Glyph\" filter, Apply it, and set\nthe following properties:  Glyph   Type        =   'Sphere'  Scalars             =   'Diameters'  Scale   Mode        =   'Scalar'  Scale   Factor      =   1  Glyph   Mode        =   'All Points'   And hit Apply. You might need to 'Zoom to Fit'. Hit the Play button on the top of\nthe interface to play the simulation over time.",
+            "title": "Visualize the simulation"
+        }
+    ]
+}
