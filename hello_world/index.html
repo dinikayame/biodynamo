@@ -321,18 +321,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../soma_clustering/" title="Soma Clustering" class="md-nav__link">
-      Soma Clustering
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -406,11 +394,6 @@ static single cell. It is the default model that comes with the installation of
 BioDynaMo. In this section we shall go over the three simple steps of running
 this simple simulation.</p>
 <h3 id="step-1-create-your-simulation">Step 1: Create your simulation</h3>
-<p>In your terminal (if you haven't already) initialize the environment for BioDynaMo with:</p>
-<div class="codehilite"><pre><span></span><span class="nb">source</span> biodynamo
-</pre></div>
-
-
 <p>Run the following command to create a new project called "hello_world":</p>
 <div class="codehilite"><pre><span></span>biodynamo new hello_world
 </pre></div>
@@ -430,6 +413,12 @@ do not want this.</p>
 
 
 <h3 id="step-3-run-your-simulation">Step 3: Run your simulation</h3>
+<div class="admonition note">
+<p class="admonition-title">Note (for Mac OS users)</p>
+<p>In order for the CLI to be available in your shell environment
+it is necessary to run the following command:</p>
+<p><code>source biodynamo.env</code></p>
+</div>
 <div class="codehilite"><pre><span></span>biodynamo run
 </pre></div>
 
@@ -447,7 +436,7 @@ cell: cell division. Open the <code>src/hello_world.h</code></p>
 
 
 <p>And add the following line to the <code>construct</code> function:</p>
-<div class="codehilite"><pre><span></span><span class="n">cell</span><span class="p">.</span><span class="n">AddBiologyModule</span><span class="p">(</span><span class="n">GrowDivide</span><span class="p">());</span>
+<div class="codehilite"><pre><span></span><span class="n">cell</span><span class="p">.</span><span class="n">AddBiologyModule</span><span class="p">(</span><span class="n">GrowDivide</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="p">{</span><span class="n">gAllBmEvents</span><span class="p">}));</span>
 </pre></div>
 
 

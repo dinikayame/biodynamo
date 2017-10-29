@@ -273,8 +273,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#create-a-bdmtoml-file" title="Create a bdm.toml file" class="md-nav__link">
-    Create a bdm.toml file
+  <a href="#create-the-configuration-file" title="Create the configuration file" class="md-nav__link">
+    Create the configuration file
   </a>
   
 </li>
@@ -283,6 +283,26 @@
   <a href="#export-visualization-files" title="Export visualization files" class="md-nav__link">
     Export visualization files
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-linux" title="On Linux:" class="md-nav__link">
+    On Linux:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-mac-os" title="On Mac OS:" class="md-nav__link">
+    On Mac OS:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -303,18 +323,6 @@
   <li class="md-nav__item">
     <a href="../diffusion/" title="Diffusion" class="md-nav__link">
       Diffusion
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../soma_clustering/" title="Soma Clustering" class="md-nav__link">
-      Soma Clustering
     </a>
   </li>
 
@@ -343,8 +351,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#create-a-bdmtoml-file" title="Create a bdm.toml file" class="md-nav__link">
-    Create a bdm.toml file
+  <a href="#create-the-configuration-file" title="Create the configuration file" class="md-nav__link">
+    Create the configuration file
   </a>
   
 </li>
@@ -353,6 +361,26 @@
   <a href="#export-visualization-files" title="Export visualization files" class="md-nav__link">
     Export visualization files
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-linux" title="On Linux:" class="md-nav__link">
+    On Linux:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-mac-os" title="On Mac OS:" class="md-nav__link">
+    On Mac OS:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -375,11 +403,12 @@
                 
                 <p>Enabling visualization is very easy. BioDynaMo can be configured through its own
 configuration file: <code>bdm.toml</code>. Visualization is just one of the many configuration
-options. Let's take a look at how to set it.</p>
-<h2 id="create-a-bdmtoml-file">Create a bdm.toml file</h2>
-<p>In your build directory (e.g. hello_world/build) create a new file called <code>bdm.toml</code>.
+options. Let's take a look at how to set it. We shall continue using the <code>hello_world</code>
+example from the previous exercise.</p>
+<h2 id="create-the-configuration-file">Create the configuration file</h2>
+<p>In your simulation directory <code>hello_world</code> create a new file called <code>bdm.toml</code>.
 You can also do this from the command line with the following command:</p>
-<div class="codehilite"><pre><span></span>touch /path/to/hello_world/build/bdm.toml
+<div class="codehilite"><pre><span></span>touch bdm.toml
 </pre></div>
 
 
@@ -389,24 +418,62 @@ You can also do this from the command line with the following command:</p>
 <div class="codehilite"><pre><span></span><span class="k">[visualization]</span>
 <span class="na">export</span> <span class="o">=</span> <span class="s">true</span>
 <span class="na">export_interval</span> <span class="o">=</span> <span class="s">1</span>
+
+    <span class="k">[[visualize_sim_object]]</span>
+    <span class="na">name</span> <span class="o">=</span> <span class="s">&quot;Cell&quot;</span>
+<span class="s">    additional_data_members = [ &quot;diameter_&quot; ]</span>
 </pre></div>
 
 
 <p>This will export a visualization file every time step. You can set the frequency
-by setting the <code>export_interval</code>. Now we need to open ParaView:</p>
+by setting the <code>export_interval</code>. Make sure that you run a good number of steps
+so that the cells have time to divide. Set it to around 2000 for the <code>hello_world</code> example.
+You can do this in <code>src/hello_world.h</code> in the <code>scheduler.Simulate(time_steps)</code> function.
+Run your simulation with <code>biodynamo run</code>.</p>
+<p>Now we need to open ParaView:</p>
+<h4 id="on-linux">On Linux:</h4>
+<div class="codehilite"><pre><span></span>biodynamo.paraview
+</pre></div>
+
+
+<h4 id="on-mac-os">On Mac OS:</h4>
 <div class="codehilite"><pre><span></span>paraview
 </pre></div>
 
 
 <p>And select "Open" as shown below:</p>
 <p><img alt="Open in ParaView" src="../images/open_file.png" /></p>
-<p>Then select the files that represent your simulation objects. If you have 
+<p>Navigate to your simulation directory.
+Then select the files that represent your simulation objects. If you have 
 output over multiple timesteps, import your simulation objects as "Group", as
 shown in the image below:</p>
 <p><img alt="Open as Group" src="../images/select_pvtu.png" /></p>
-<p>Apply any of ParaView's built-in filters to your input data. To render the output
-press on the "eye" icon next in the Pipeline Browser:</p>
-<p><img alt="Open as Group" src="../images/view_glyph.png" /></p>
+<p>Click on the <code>cells_data_</code> entry in the Pipeline Browser and press "Apply". From "Filters", select
+"Search" (or do Ctrl + Space). Search for the "Glyph" filter, Apply it, and set
+the following properties:</p>
+<div class="codehilite"><pre><span></span><span class="n">Glyph</span> <span class="n">Type</span>      <span class="o">=</span> <span class="s1">&#39;Sphere&#39;</span>
+<span class="n">Scalars</span>         <span class="o">=</span> <span class="s1">&#39;diameter_&#39;</span>
+<span class="n">Glyph</span> <span class="n">Mode</span>      <span class="o">=</span> <span class="s1">&#39;All Points&#39;</span>
+<span class="n">Scale</span> <span class="n">Mode</span>      <span class="o">=</span> <span class="s1">&#39;Scalar&#39;</span>
+<span class="n">Scale</span> <span class="n">Factor</span>    <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Coloring</span>        <span class="o">=</span> <span class="s1">&#39;diameter_&#39;</span>
+</pre></div>
+
+
+<p>Press "Apply" to let the changes take effect.</p>
+<p>From "View", select "Animation Panel". This will display some animation settings
+at the bottom of the screen. From the "Mode" select "Real Time".
+Then click the Play button at the top of the screen to run the simulation visualization.</p>
+<!-- ## Live visualization
+
+Another way to enable visualization is through ParaView's live visualization.
+This feature allows you to inspect your simulation while it is running. In your
+`bdm.toml` file you add the following lines:
+
+
+wzxhzdk:5
+
+ -->
                 
                   
                 

@@ -289,6 +289,26 @@
     Download the code from Github
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-linux" title="On Linux:" class="md-nav__link">
+    On Linux:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-mac-os" title="On Mac OS:" class="md-nav__link">
+    On Mac OS:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -355,18 +375,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../soma_clustering/" title="Soma Clustering" class="md-nav__link">
-      Soma Clustering
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -394,6 +402,26 @@
   <a href="#download-the-code-from-github" title="Download the code from Github" class="md-nav__link">
     Download the code from Github
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-linux" title="On Linux:" class="md-nav__link">
+    On Linux:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-mac-os" title="On Mac OS:" class="md-nav__link">
+    On Mac OS:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -470,17 +498,27 @@
                   <h1>Diffusion</h1>
                 
                 <p>One of BioDynaMo's built-in biological processes is extracellular diffusion.
-It is the process of extracellular substances diffusion through space. The constants
+It is the process of extracellular substances diffusing through space. The constants
 that govern the diffusion process can be set by the user. Let's go through an
-example where diffusion plays a roll.</p>
+example where diffusion plays a role.</p>
 <h3 id="download-the-code-from-github">Download the code from Github</h3>
+<p>If you are still in the <code>hello_world</code> directory.</p>
+<h4 id="on-linux">On Linux:</h4>
+<div class="codehilite"><pre><span></span>biodynamo.git clone https://github.com/BioDynaMo/simulation-templates.git
+<span class="nb">cd</span> simulation-templates
+biodynamo.git checkout newcastle
+</pre></div>
+
+
+<h4 id="on-mac-os">On Mac OS:</h4>
 <div class="codehilite"><pre><span></span>git clone https://github.com/BioDynaMo/simulation-templates.git
+<span class="nb">cd</span> simulation-templates
 git checkout newcastle
 </pre></div>
 
 
 <h3 id="inspect-the-code">Inspect the code</h3>
-<p>Go into the <code>diffusion</code> directory and open the source file <code>src/diffusion.h</code> in your favorite editor. 
+<p>Go into the <code>diffusion</code> directory and open the source file <code>src/diffusion_biology_modules.h</code> in your favorite editor. 
 We can note the following things from its content:</p>
 <h4 id="1-list-the-substances">1. List the substances</h4>
 <div class="codehilite"><pre><span></span><span class="k">enum</span> <span class="n">Substances</span> <span class="p">{</span> <span class="n">kKalium</span> <span class="p">};</span>
@@ -488,9 +526,10 @@ We can note the following things from its content:</p>
 
 
 <p>The extracellular substances that will be used in the simulation are listed in
-an <code>enum</code> data structure. In this case it is just a single substance. Per C++ 
-convention we will prepend the substance's name with the letter "k".</p>
+an <code>enum</code> data structure. In this case it is just a single substance. According to our C++ 
+coding style we will prepend the substance's name with the letter "k".</p>
 <h4 id="2-set-up-the-biology-modules">2. Set up the biology modules</h4>
+<p>Open the <code>src/diffusion.h</code> source file.</p>
 <p>In order for BioDynaMo to anticipate the biology modules that you want to use in
 the simulation, we need to declare them in our <code>CompileTimeParameters</code> as such:</p>
 <div class="codehilite"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Backend</span><span class="o">&gt;</span>
@@ -500,7 +539,7 @@ the simulation, we need to declare them in our <code>CompileTimeParameters</code
 </pre></div>
 
 
-<p>The relevant part to take note of is the mentioning of the <code>Chemotaxis</code> and
+<p>The important part here is the <code>Chemotaxis</code> and
 <code>KaliumSecretion</code> biology modules. These are the modules that will govern the
 behavior of the simulation objects (i.e. cells). We import them at the top of the
 source code with <code>#include diffusion_biology_modules</code>.</p>
@@ -532,20 +571,20 @@ source code with <code>#include diffusion_biology_modules</code>.</p>
 </pre></div>
 
 
-<p>The <code>construct</code> defines the properties of each cell that we create. These can be
+<p>The <code>construct</code> lambda defines the properties of each cell that we create. These can be
 physical properties (diameter, mass), but also biological properties and behaviors
 (chemotaxis, substance secretion)</p>
 <p>In this example, each cell is assigned the <code>Chemotaxis</code> behavior. In <code>diffusion_biology_behaviors.h</code> you can
 check the source code of this module. Basically it makes cells move according to the gradient,
 caused by a concentration difference of the substance. One of the cells
-(the cell at position {50, 50, 50}) will be the one secreting the substance;
+(the cell at position <code>{50, 50, 50}</code>) will be the one secreting the substance;
 it therefore gets assigned the <code>SubstanceSecretion</code> behavior.</p>
 <p>Furthermore, we define the initial positions of the cells. In this example it is
 done explicitly, but one could also generate a grid of cells, or a random distribution
 of cells.</p>
 <h3 id="configure-the-simulation">Configure the simulation</h3>
-<p>Create a <code>bdm.toml</code> file in the <code>diffusion</code> directory, and create the following
-configuration file:</p>
+<p>Create a <code>bdm.toml</code> file in the <code>diffusion</code> directory, and copy the following lines
+into it:</p>
 <div class="codehilite"><pre><span></span><span class="k">[visualization]</span>
 <span class="na">export</span> <span class="o">=</span> <span class="s">true</span>
 <span class="na">export_interval</span> <span class="o">=</span> <span class="s">10</span>
@@ -565,18 +604,22 @@ simulation after it has finished. Furthermore, we enable the output of the diame
 of our simulation objects (by default named "Cell"), and the gradient data of the
 extracellular diffusion</p>
 <h3 id="build-and-run-the-simulation">Build and run the simulation</h3>
-<p>Run the following commands to build and run the simulation (do not forget to
-<code>biodynamo source</code> if you haven't already in your terminal):</p>
-<div class="codehilite"><pre><span></span>biodynamo build
-biodynamo run
+<div class="admonition note">
+<p class="admonition-title">Note (for Mac OS users)</p>
+<p>In order for the CLI to be available in your shell environment
+it is necessary to run the following command:</p>
+<p><code>source biodynamo.env</code></p>
+</div>
+<p>Run the following commands to build and run the simulation.</p>
+<div class="codehilite"><pre><span></span>biodynamo run
 </pre></div>
 
 
 <h3 id="visualize-the-simulation">Visualize the simulation</h3>
 <p>Open ParaView and navigate to the <code>diffusion</code> directory. Open the <code>cells_data_*</code>
-and <code>Kalium_*</code> files as Group (see the Visualization exercise as a reference).</p>
+and <code>Kalium_*</code> files as Group (see the <a href="../visualization/">Visualization</a> exercise as a reference).</p>
 <p>Click on the <code>cells_data_</code> entry in the Pipeline Browser. From "Filters", select
-"Search" (or do Ctrl + Space). Search for the "Glyph" filter, Apply it, and set
+"Search" (or do <code>Ctrl + Space</code>). Search for the "Glyph" filter, Apply it, and set
 the following properties:</p>
 <div class="codehilite"><pre><span></span><span class="n">Glyph</span> <span class="n">Type</span>      <span class="o">=</span> <span class="s1">&#39;Sphere&#39;</span>
 <span class="n">Scalars</span>         <span class="o">=</span> <span class="s1">&#39;Diameters&#39;</span>
@@ -586,8 +629,10 @@ the following properties:</p>
 </pre></div>
 
 
-<p>And hit Apply. You might need to 'Zoom to Fit'. Hit the Play button on the top of
-the interface to play the simulation over time.</p>
+<p>Press "Apply" to let the changes take effect.</p>
+<p>From "View", select "Animation Panel". This will display some animation settings
+at the bottom of the screen. From the "Mode" select "Real Time".
+Then click the Play button at the top of the screen to run the simulation visualization.</p>
                 
                   
                 
@@ -620,20 +665,6 @@ the interface to play the simulation over time.</p>
             </div>
           </a>
         
-        
-          <a href="../soma_clustering/" title="Soma Clustering" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Soma Clustering
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
         
       </nav>
     </div>
