@@ -4,47 +4,25 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2017-10-29</lastmod>
+     <lastmod>2017-11-08</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
-        
     <url>
-     <loc>/installation/</loc>
-     <lastmod>2017-10-29</lastmod>
+     <loc>/getting_started/</loc>
+     <lastmod>2017-11-08</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    <url>
-     <loc>/usage/</loc>
-     <lastmod>2017-10-29</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
     
 
     
-        
     <url>
-     <loc>/hello_world/</loc>
-     <lastmod>2017-10-29</lastmod>
+     <loc>/first_simulation/</loc>
+     <lastmod>2017-11-08</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    <url>
-     <loc>/visualization/</loc>
-     <lastmod>2017-10-29</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>/diffusion/</loc>
-     <lastmod>2017-10-29</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
     
 
 </urlset>
