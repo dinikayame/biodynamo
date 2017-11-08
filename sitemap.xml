@@ -10,8 +10,46 @@
     
 
     
+        
     <url>
-     <loc>/getting_started/</loc>
+     <loc>/installation/</loc>
+     <lastmod>2017-11-08</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/usage/</loc>
+     <lastmod>2017-11-08</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>/hello_world/</loc>
+     <lastmod>2017-11-08</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/visualization/</loc>
+     <lastmod>2017-11-08</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/diffusion/</loc>
+     <lastmod>2017-11-08</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+    <url>
+     <loc>/documentation/</loc>
      <lastmod>2017-11-08</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -19,7 +57,7 @@
 
     
     <url>
-     <loc>/first_simulation/</loc>
+     <loc>/contact/</loc>
      <lastmod>2017-11-08</lastmod>
      <changefreq>daily</changefreq>
     </url>
