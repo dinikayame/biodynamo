@@ -201,22 +201,49 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" title="Installation" class="md-nav__link">
-    Installation
+  <a href="#user-installation" title="User Installation" class="md-nav__link">
+    User Installation
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ubuntu" title="Ubuntu" class="md-nav__link">
-    Ubuntu
+  <a href="#linux" title="Linux" class="md-nav__link">
+    Linux
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mac-os" title="Mac OS" class="md-nav__link">
+    Mac OS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-installation" title="Developer Installation" class="md-nav__link">
+    Developer Installation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linux_1" title="Linux" class="md-nav__link">
+    Linux
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mac-os_1" title="Mac OS" class="md-nav__link">
     Mac OS
   </a>
   
@@ -358,22 +385,49 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" title="Installation" class="md-nav__link">
-    Installation
+  <a href="#user-installation" title="User Installation" class="md-nav__link">
+    User Installation
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ubuntu" title="Ubuntu" class="md-nav__link">
-    Ubuntu
+  <a href="#linux" title="Linux" class="md-nav__link">
+    Linux
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mac-os" title="Mac OS" class="md-nav__link">
+    Mac OS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-installation" title="Developer Installation" class="md-nav__link">
+    Developer Installation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linux_1" title="Linux" class="md-nav__link">
+    Linux
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mac-os_1" title="Mac OS" class="md-nav__link">
     Mac OS
   </a>
   
@@ -400,9 +454,15 @@
                 
                 
                 <h1 id="getting-started">Getting Started</h1>
-<h2 id="installation">Installation</h2>
-<p>Currently supported platforms are Linux Ubuntu and Mac OS X.</p>
-<h3 id="ubuntu">Ubuntu</h3>
+<p>There are two types of installations of BioDynaMo: the <strong>user installation</strong> and
+the <strong>developers installation</strong>. Currently supported platforms are Linux and 
+Mac OS X. Below you will find instructions on how to install each installation
+type for the supported platforms.</p>
+<h2 id="user-installation">User Installation</h2>
+<p>The user installation is intended for those that want to make use of the
+existing features of BioDynaMo and only focus on implementing biological models
+with those features.</p>
+<h3 id="linux">Linux</h3>
 <div class="codehilite"><pre><span></span>wget https://github.com/BioDynaMo/biodynamo/releases/download/v0.1.0/biodynamo_0.1.0_amd64.snap
 sudo snap install --dangerous --classic biodynamo_0.1.0_amd64.snap
 </pre></div>
@@ -410,6 +470,43 @@ sudo snap install --dangerous --classic biodynamo_0.1.0_amd64.snap
 
 <h3 id="mac-os">Mac OS</h3>
 <div class="codehilite"><pre><span></span>brew install Biodynamo/biodynamo/biodynamo
+</pre></div>
+
+
+<h2 id="developer-installation">Developer Installation</h2>
+<p>The development installation is intended for those that want to make changes to
+BioDynaMo itself, by creating new features or extending existing ones.</p>
+<h3 id="linux_1">Linux</h3>
+<div class="codehilite"><pre><span></span>git clone https://github.com/BioDynaMo/biodynamo
+<span class="nb">cd</span> biodynamo
+
+sudo script/install_prerequesites_ubuntu_16.04.sh
+
+<span class="c1"># source biodynamo environment</span>
+<span class="nb">source</span> /opt/biodynamo/biodynamo_dev.env
+
+mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+cmake .. <span class="o">&amp;&amp;</span> make -j4
+sudo make install
+</pre></div>
+
+
+<h3 id="mac-os_1">Mac OS</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The developement installation requires you to have homebrew installed</p>
+</div>
+<div class="codehilite"><pre><span></span>git clone https://github.com/BioDynaMo/biodynamo
+<span class="nb">cd</span> biodynamo
+
+sudo script/install_prerequesites_macos.sh
+
+<span class="c1"># source biodynamo environment</span>
+<span class="nb">source</span> /opt/biodynamo/biodynamo_dev.env
+
+mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+cmake .. <span class="o">&amp;&amp;</span> make -j4
+sudo make install
 </pre></div>
                 
                   
