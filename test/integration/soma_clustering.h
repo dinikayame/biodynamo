@@ -35,8 +35,33 @@ BDM_SIM_OBJECT(MyCell, Cell) {
   void SetCellType(int t) { cell_type_[kIdx] = t; }
   int GetCellType() const { return cell_type_[kIdx]; }
 
+  Shape GetShape() { return Shape::kSphere; }
+
  private:
   vec<int> cell_type_;
+};
+
+BDM_SIM_OBJECT(Neuron, Cell) {
+  BDM_SIM_OBJECT_HEADER(NeuronExt, 1, cell_type_, scaling_, orient_);
+
+ public:
+  NeuronExt() {}
+  // TODO(ahmad): this needs to be explicitely stated, otherwise empty
+  // implementation
+  NeuronExt(const std::array<double, 3>& position) : Base(position) {}
+
+  void SetCellType(int t) { cell_type_[kIdx] = t; }
+  int GetCellType() const { return cell_type_[kIdx]; }
+
+  void SetScaling(const std::array<double, 3>& s) { scaling_[kIdx] = s; }
+  void SetOrientation(const std::array<double, 3>& o) { orient_[kIdx] = o; }
+  
+  Shape GetShape() { return Shape::kCylinder; }
+
+ private:
+  vec<int> cell_type_;
+  vec<std::array<double, 3>> scaling_;
+  vec<std::array<double, 3>> orient_;
 };
 
 enum Substances { kSubstance_0, kSubstance_1 };
@@ -85,6 +110,7 @@ struct SubstanceSecretion : public BaseBiologyModule {
   SubstanceSecretion() : BaseBiologyModule(gAllBmEvents) {}
 
   template <typename T>
+  // typename std::enable_if<std::is_same< , >::value>::type
   void Run(T* cell) {
     if (!init_) {
       dg_0_ = GetDiffusionGrid(kSubstance_0);
@@ -99,6 +125,10 @@ struct SubstanceSecretion : public BaseBiologyModule {
     }
   }
 
+  // template <typename T>
+  // typename std::enable_if<!std::is_same< , >::value>::type
+  // void Run(...) { // throw some error }
+
  private:
   bool init_ = false;
   DiffusionGrid* dg_0_ = nullptr;
@@ -110,7 +140,7 @@ struct SubstanceSecretion : public BaseBiologyModule {
 template <typename Backend>
 struct CompileTimeParam : public DefaultCompileTimeParam<Backend> {
   using BiologyModules = Variant<Chemotaxis, SubstanceSecretion>;
-  using AtomicTypes = VariadicTypedef<MyCell>;
+  using AtomicTypes = VariadicTypedef<MyCell, Neuron>;
 };
 
 // Returns 0 if the cell locations within a subvolume of the total system,
@@ -261,6 +291,19 @@ inline int Simulate(int argc, const char** argv) {
   };
   ModelInitializer::CreateCellsRandom(Param::min_bound_, Param::max_bound_,
                                       num_cells / 2, construct_1);
+
+  // Construct num_cells/2 cells of type -1
+  auto construct_2 = [](const std::array<double, 3>& position) {
+    Neuron cell(position);
+    std::array<double, 3> s = {position[2], position[1], position[2]};
+    std::array<double, 3> o = {position[0], position[1], position[0]};
+    cell.SetScaling(s);
+    cell.SetOrientation(o);
+    return cell;
+  };
+  ModelInitializer::CreateCellsRandom(Param::min_bound_, Param::max_bound_,
+                                      30, construct_2);
+
 
   // 3. Define the substances that cells may secrete
   // Order: substance_name, diffusion_coefficient, decay_constant, resolution

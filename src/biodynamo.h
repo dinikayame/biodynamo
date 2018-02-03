@@ -10,6 +10,7 @@
 #include "resource_manager.h"
 #include "scheduler.h"
 #include "simulation_object_util.h"
+#include "shape.h"
 #include "variadic_template_parameter_util.h"
 #include "vtune.h"
 
