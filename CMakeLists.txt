@@ -134,7 +134,7 @@ generate_rootlogon()
 if (${ParaView_FOUND})
   link_directories($ENV{ParaView_DIR}/../../paraview-5.4)
   target_link_libraries(biodynamo vtkPVPythonCatalyst vtkIOParallelXML
-    vtkPVVTKExtensionsDefault vtkPVServerManagerRendering libGlyphFilterP.so)
+    vtkPVVTKExtensionsDefault vtkPVServerManagerRendering)
 endif()
 
 # create cmake files used by external builds

@@ -2,6 +2,7 @@
 #define VISUALIZATION_SIMPLE_PIPELINE_H_ 1
 
 #include <TError.h>
+#include <cstdlib>
 #include <map>
 #include <string>
 
@@ -45,8 +46,11 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
     controller_ = vtkSMParaViewPipelineControllerWithRendering::New();
     plugin_manager_ = vtkSMPluginManager::New();
     // Load custom plugin to enable cylinder glyph scaling
-    // TODO(ahmad): change path to BDM installation dir
-    plugin_manager_->LoadLocalPlugin("/home/ahmad/ParaView-v5.4.1/Examples/Plugins/GlyphP/build/libvtkPVGlyphFilterP.so");
+    std::string plugin_path = std::string(std::getenv("ParaView_DIR")) + "/../../paraview-5.4/plugins/libvtkPVGlyphFilterExt.so";
+    if (!plugin_manager_->LoadLocalPlugin(plugin_path.c_str())) {
+      Fatal("LoadLocalPlugin",
+            "Was unable to load our custom visualzation plugin. Do you have ParaView_DIR set in your environmental variables?");
+    }
   }
 
   virtual ~vtkCPVTKPipeline() {}
@@ -108,8 +112,6 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
       vtkPVTrivialProducer* real_producer =
           vtkPVTrivialProducer::SafeDownCast(client_side_object);
 
-      // Per default we use the Glyph filter and scale by Scalar values
-      std::string filter_name = "Glyph";
       std::string source_name = "SphereSource";
       int scale_mode = 0;
 
@@ -117,7 +119,6 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
         real_producer->SetOutput(vtk_object);
 
         if (shapes_[i] == Shape::kCylinder) {
-          filter_name = "GlyphP";
           source_name = "CylinderSource";
           scale_mode = 4;
         } else if (shapes_[i] != Shape::kSphere) {
@@ -127,7 +128,7 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
         // Create a Glyph filter
         vtkSmartPointer<vtkSMSourceProxy> glyph;
         glyph.TakeReference(vtkSMSourceProxy::SafeDownCast(
-            session_manager_->NewProxy("filters", filter_name.c_str())));
+            session_manager_->NewProxy("filters", "BDMGlyph")));
         controller_->PreInitializeProxy(glyph);
         std::string object_name_str = object_name;
         std::string glyph_name = object_name_str + "_Glyph";
