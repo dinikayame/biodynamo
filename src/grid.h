@@ -672,6 +672,38 @@ class Grid {
     return box_coord;
   }
 
+  template <typename T_UINT32>
+  void GetSuccessors(std::vector<T_UINT32>* successors) {
+    uint16_t type = 0;
+    for (size_t i = 0; i < successors_.size(type); i++) {
+      auto sh = SoHandle(type, i);
+      (*successors)[i] = successors_[sh].GetElementIdx();
+    }
+  }
+
+  template <typename T_UINT32, typename T_UINT16>
+  void GetGPUBoxData(std::vector<T_UINT32>* gpu_starts, std::vector<T_UINT16>* gpu_lengths) {
+    gpu_starts->resize(boxes_.size());
+    gpu_lengths->resize(boxes_.size());
+    size_t i = 0;
+    for (auto& box : boxes_) {
+      (*gpu_starts)[i] = box.start_.load().GetElementIdx();
+      (*gpu_lengths)[i] = box.length_;
+      i++;
+    }
+  }
+
+  template <typename T_UINT32, typename T_INT32>
+  void GetGridData(T_UINT32* box_length, std::array<T_UINT32, 3>& num_boxes_axis, std::array<T_INT32, 3>& grid_dimensions) {
+    box_length[0] = box_length_;
+    num_boxes_axis[0] = num_boxes_axis_[0];
+    num_boxes_axis[1] = num_boxes_axis_[1];
+    num_boxes_axis[2] = num_boxes_axis_[2];
+    grid_dimensions[0] = grid_dimensions_[0];
+    grid_dimensions[1] = grid_dimensions_[2];
+    grid_dimensions[2] = grid_dimensions_[4];
+  }
+
  private:
   /// The vector containing all the boxes in the grid
   std::vector<Box> boxes_;

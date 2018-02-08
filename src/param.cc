@@ -26,6 +26,9 @@ std::vector<Param::VisualizeDiffusion> Param::visualize_diffusion_;
 bool Param::statistics_ = false;
 bool Param::python_catalyst_pipeline_ = false;
 
+// experimental group
+bool Param::use_gpu_ = false;
+
 #define BDM_ASSIGN_CONFIG_VALUE(variable, config_key)                        \
   {                                                                          \
     if (config->contains_qualified(config_key)) {                            \
@@ -124,6 +127,9 @@ void Param::AssignFromConfig(const std::shared_ptr<cpptoml::table>& config) {
 
   // development group
   BDM_ASSIGN_CONFIG_VALUE(statistics_, "development.statistics");
+  
+  // experimental group
+  BDM_ASSIGN_CONFIG_VALUE(use_gpu_, "experimental.use_gpu");
 }
 
 void Param::Reset() {
@@ -148,6 +154,9 @@ void Param::Reset() {
   // development group
   statistics_ = false;
   python_catalyst_pipeline_ = false;
+
+  // experimental group
+  use_gpu_ = false;
 }
 
 }  // namespace bdm

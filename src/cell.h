@@ -39,12 +39,12 @@ BDM_SIM_OBJECT(Cell, SimulationObject) {
   }
 
   using TBiologyModuleVariant = typename TCompileTimeParam::BiologyModules;
-  CellExt() : density_{1.0} {}
-  explicit CellExt(double diameter) : diameter_(diameter), density_{1.0} {
+  CellExt() : density_(1.0) {}
+  explicit CellExt(double diameter) : diameter_(diameter), density_(1.0) {
     UpdateVolume();
   }
   explicit CellExt(const array<double, 3>& position)
-      : position_(position), mass_location_(position), density_{1.0} {}
+      : position_(position), mass_location_(position), density_(1.0) {}
 
   virtual ~CellExt() {}
 
@@ -133,8 +133,16 @@ BDM_SIM_OBJECT(Cell, SimulationObject) {
 
   const array<double, 3>& GetPosition() const { return position_[kIdx]; }
 
-  double* GetPositionPtr() { return &(position_[0][0]); }
-  double* GetDiameterPtr() { return &(diameter_[0]); }
+  double* GetPositionPtr() { return position_.data()->data(); }
+  double* GetDiameterPtr() { return diameter_.data(); }
+  double* GetTractorForcePtr() { return tractor_force_.data()->data(); }
+  double* GetAdherencePtr() { return adherence_.data(); }
+
+  void FillMassVector(std::vector<double>* mass) {
+    for (size_t i = 0; i < diameter_.size(); i++) {
+      (*mass)[i] = density_[i] * volume_[i];
+    }
+  }
 
   const array<double, 3>& GetTractorForce() const {
     return tractor_force_[kIdx];

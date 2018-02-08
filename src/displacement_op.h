@@ -8,6 +8,8 @@
 #include "math_util.h"
 #include "param.h"
 
+#include <fstream>
+
 namespace bdm {
 
 using std::array;
@@ -34,8 +36,7 @@ class DisplacementOp {
 
   template <typename TContainer>
   void operator()(TContainer* cells, uint16_t type_idx) const {
-    std::vector<array<double, 3>> cell_movements;
-    cell_movements.reserve(cells->size());
+    std::vector<array<double, 3>> cell_movements(cells->size());
 
     auto& grid = TGrid::GetInstance();
     auto search_radius = grid.GetLargestObjectSize();
@@ -141,6 +142,13 @@ class DisplacementOp {
       }
       cell_movements[i] = movement_at_next_step;
     }
+
+    // remove("cpu.txt");
+    // std::ofstream ofs("cpu.txt", std::ofstream::out);
+    // for (size_t k = 0; k < cell_movements.size(); k++) {
+    //   ofs << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
+    // }
+    // ofs.close();
 
 // set new positions after all updates have been calculated
 // otherwise some cells would see neighbors with already updated positions

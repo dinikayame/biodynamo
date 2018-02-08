@@ -185,11 +185,18 @@ struct Param {
 
   /// Use the python script (simple_pipeline.py) to do Live Visualization with
   /// ParaView. If false, we use the C++ pipeline
-  /// Defautl value: `false`\n
+  /// Default value: `false`\n
   /// TOML config file:
   ///     [development]
   ///     python_catalyst_pipeline_ = false
   static bool python_catalyst_pipeline_;
+
+  /// Run the simulation partially on the GPU for improved performance.
+  /// Default value: `false`\n
+  /// TOML config file:
+  ///     [experimental]
+  ///     use_gpu = false 
+  static bool use_gpu_;
 
   /// Resets the static variables to its default values
   static void Reset();

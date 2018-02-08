@@ -9,6 +9,8 @@
 #include "cell.h"
 #include "diffusion_op.h"
 #include "displacement_op.h"
+#include "displacement_op_gpu.h"
+#include "gpu/gpu_helper.h"
 #include "op_timer.h"
 #include "resource_manager.h"
 #include "simulation_backup.h"
@@ -34,6 +36,10 @@ class Scheduler {
     if (Param::live_visualization_ || Param::export_visualization_) {
       visualization_->Initialize(BDM_SRC_DIR
                                  "/visualization/simple_pipeline.py");
+    }
+    if (Param::use_gpu_) {
+      FindGpuDevices();
+      CompileKernels();
     }
   }
 
@@ -145,7 +151,10 @@ class Scheduler {
     }
     rm->ApplyOnAllTypes(diffusion_);
     rm->ApplyOnAllTypes(biology_);
-    if (Param::run_mechanical_interactions_) {
+    if (Param::use_gpu_) {
+      rm->ApplyOnAllTypes(physics_gpu_);
+    }
+    else if (Param::run_mechanical_interactions_) {
       rm->ApplyOnAllTypes(physics_with_bound_);
     } else if (Param::bound_space_) {
       rm->ApplyOnAllTypes(bound_space_);
@@ -162,6 +171,7 @@ class Scheduler {
 
   OpTimer<DiffusionOp<>> diffusion_ = OpTimer<DiffusionOp<>>("diffusion");
   OpTimer<BiologyModuleOp> biology_ = OpTimer<BiologyModuleOp>("biology");
+  OpTimer<DisplacementOpGpu<>> physics_gpu_ = OpTimer<DisplacementOpGpu<>>("physics_gpu");
   OpTimer<DisplacementOp<>> physics_with_bound_ =
       OpTimer<DisplacementOp<>>("physics");
   OpTimer<BoundSpace> bound_space_ = OpTimer<BoundSpace>("bound_space");
