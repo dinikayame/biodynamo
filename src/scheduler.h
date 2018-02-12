@@ -61,6 +61,7 @@ class Scheduler {
       }
 
       total_steps_++;
+      Param::step_global_ = total_steps_;
 
       // Backup
       using std::chrono::seconds;
@@ -107,6 +108,7 @@ class Scheduler {
       }
 
       total_steps_++;
+      Param::step_global_ = total_steps_;
 
       // Backup
       using std::chrono::seconds;
