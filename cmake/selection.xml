@@ -17,6 +17,8 @@
 
   </selection>
   <exclusion>
+    <class pattern="cl::*" />
+    <class pattern="*_TC2*" />
     <class pattern="std::array<*>" />
 
     <class pattern="*bdm::SoaRef*"/>

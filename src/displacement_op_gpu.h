@@ -2,7 +2,7 @@
 #define DISPLACEMENT_OP_GPU_H_
 
 #include "displacement_op.h"
-#include "gpu/gpu_helper.h"
+#include "displacement_op_cuda.h"
 #include "resource_manager.h"
 
 #include <fstream>
@@ -21,91 +21,27 @@ class DisplacementOpGpu {
   template <typename TContainer>
   void operator()(TContainer* cells, uint16_t type_idx) const {
     auto& grid = TGrid::GetInstance();
-    auto rm = TResourceManager::Get();
-    auto context = rm->GetOpenCLContext();
-    auto devices = rm->GetOpenCLDeviceList();
-    auto programs = rm->GetOpenCLProgramList();
 
-    std::vector<cl_double> mass(cells->size());
-    std::vector<array<cl_double, 3>> cell_movements(cells->size());
-    std::vector<cl_uint> gpu_starts;
-    std::vector<cl_ushort> gpu_lengths;
-    std::vector<cl_uint> successors(cells->size());
-    cl_uint box_length;
-    std::array<cl_uint, 3> num_boxes_axis;
-    std::array<cl_int, 3> grid_dimensions;
+    std::vector<std::array<double,3 >> cell_movements(cells->size());
+    std::vector<double> mass(cells->size());
+    std::vector<uint32_t> starts;
+    std::vector<uint16_t> lengths;
+    std::vector<uint32_t> successors(cells->size());
+    uint32_t box_length;
+    uint32_t N = cells->size();
+    std::array<uint32_t, 3> num_boxes_axis;
+    std::array<int32_t, 3> grid_dimensions;
 
     // We need to create a mass vector, because it is not stored by default in
     // a cell container
     cells->FillMassVector(&mass);
     grid.GetSuccessors(&successors);
-    grid.GetGPUBoxData(&gpu_starts, &gpu_lengths);
+    grid.GetGPUBoxData(&starts, &lengths);
     grid.GetGridData(&box_length, num_boxes_axis, grid_dimensions);
 
-    // Create command queue on the GPU device
-    cl::CommandQueue queue(*context, (*devices)[0], CL_QUEUE_PROFILING_ENABLE);
+    std::cout << "Launching CUDA kernel" << std::endl;
 
-    // Allocate GPU buffers
-    cl::Buffer positions_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 cells->size() * 3 * sizeof(cl_double), cells->GetPositionPtr());
-    cl::Buffer diameters_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 cells->size() * sizeof(cl_double), cells->GetDiameterPtr());
-    cl::Buffer tractor_force_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 cells->size() * 3 * sizeof(cl_double), cells->GetTractorForcePtr());
-    cl::Buffer adherence_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 cells->size() * sizeof(cl_double), cells->GetAdherencePtr());
-    cl::Buffer mass_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 cells->size() * sizeof(cl_double), mass.data());
-    cl::Buffer cell_movements_arg(*context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-                 cells->size() * 3 * sizeof(cl_double), cell_movements.data()->data());
-    cl::Buffer starts_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 gpu_starts.size() * sizeof(cl_uint), gpu_starts.data());
-    cl::Buffer lengths_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 gpu_lengths.size() * sizeof(cl_short), gpu_lengths.data());
-    cl::Buffer successors_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 successors.size() * sizeof(cl_uint), successors.data());
-    cl::Buffer nba_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 3 * sizeof(cl_uint), num_boxes_axis.data());
-    cl::Buffer gd_arg(*context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                 3 * sizeof(cl_int), grid_dimensions.data());
-
-    // Create the kernel object from our program
-    // TODO(ahmad): generalize the program selection, in case we have more than
-    // one. We can maintain an unordered map of programs maybe
-    cl::Kernel collide((*programs)[0], "collide");
-
-    // Set kernel parameters
-    collide.setArg(0, positions_arg);
-    collide.setArg(1, diameters_arg);
-    collide.setArg(2, tractor_force_arg);
-    collide.setArg(3, adherence_arg);
-    collide.setArg(4, mass_arg);
-    collide.setArg(5, Param::simulation_time_step_);
-    collide.setArg(6, Param::simulation_max_displacement_);
-
-    collide.setArg(7, static_cast<cl_int>(cells->size()));
-    collide.setArg(8, starts_arg);
-    collide.setArg(9, lengths_arg);
-    collide.setArg(10, successors_arg);
-    collide.setArg(11, box_length);
-    collide.setArg(12, nba_arg);
-    collide.setArg(13, gd_arg);
-    collide.setArg(14, cell_movements_arg);
-
-    int block_size = 256;
-
-    auto N = cells->size();
-
-    try {
-      // std::cout << "Global work size = " << (N + (block_size - (N%block_size))) << std::endl;
-      queue.enqueueNDRangeKernel(collide, cl::NullRange, cl::NDRange(N + (block_size - (N%block_size))), cl::NDRange(block_size));
-    } catch (const cl::Error &err) {
-      std::cerr << "OpenCL error: " << err.what() << "(" << err.err() << ") = " << getErrorString(err.err()) 
-                << std::endl;
-      throw;
-    }
-
-    queue.enqueueReadBuffer(cell_movements_arg, CL_TRUE, 0, cells->size() * 3 * sizeof(cl_double), cell_movements.data()->data());
+    displacement_op_cuda(cells->GetPositionPtr(), cells->GetDiameterPtr(), cells->GetTractorForcePtr(), cells->GetAdherencePtr(), mass.data(), &(Param::simulation_time_step_), &(Param::simulation_max_displacement_), &N, starts.data(), lengths.data(), successors.data(), &box_length, num_boxes_axis.data(), grid_dimensions.data(), cell_movements.data()->data());
 
     // remove("gpu.txt");
     // std::ofstream ofs("gpu.txt", std::ofstream::out);

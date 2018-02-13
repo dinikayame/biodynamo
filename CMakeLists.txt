@@ -44,6 +44,7 @@ if (test)
   find_package(Threads REQUIRED)
 endif()
 
+find_package(CUDA QUIET REQUIRED)
 find_package(Git)
 find_package(ROOT REQUIRED COMPONENTS Eve Geom Gui)
 
@@ -112,17 +113,40 @@ include_directories("${CMAKE_SOURCE_DIR}/test")
 include_directories("${CMAKE_SOURCE_DIR}/third_party")
 include_directories("${CMAKE_SOURCE_DIR}/demo")
 include_directories("${MPARK_LIB}")
+# to find omp.h : Doesnt work, because uses wrong intrinsic headers for other stuff then... So let's copy it to build dir
+# include_directories("/afs/cern.ch/sw/lcg/external/gcc/6.3.0/x86_64-centos7/lib/gcc/x86_64-pc-linux-gnu/6.3.0/include/")
+include_directories("${CMAKE_SOURCE_DIR}/build")
+include_directories("/usr/local/cuda-8.0/include ")
 
 # build libbiodynamo
 file(GLOB_RECURSE HEADERS "${CMAKE_SOURCE_DIR}/src/*.h")
 file(GLOB_RECURSE LIB_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cc")
+file(GLOB_RECURSE KERNELS "${CMAKE_SOURCE_DIR}/src/*.cu")
 build_libbiodynamo(biodynamo
                    SOURCES ${LIB_SOURCES}
                    HEADERS ${HEADERS}
-                   LIBRARIES ${ROOT_LIBRARIES} OpenCL)
+                   LIBRARIES ${ROOT_LIBRARIES})
 if(${VTune_FOUND})
   target_link_libraries(biodynamo ${VTUNE_LIBRARIES})
 endif()
+
+# Link to OpenCL
+link_directories("${CMAKE_SOURCE_DIR}/build")
+target_link_libraries(biodynamo OpenCL)
+
+# Compile CUDA kernels into shared library
+set(CUDA_HOST_COMPILER "/usr/bin/")
+# CUDA 8.0 is not compatible with gcc > 5
+set(NVCCFLAGS="--compiler-bindir ${CUDA_HOST_COMPILER}")
+# set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
+set(CUDA_PATH "/usr/local/cuda-8.0")
+set(CUDA_INC_PATH "${CUDA_PATH}/include")
+set(CUDA_HELPER_PATH "${CUDA_PATH}/samples/common/inc")
+set(CUDA_LIB_PATH "${CUDA_PATH}/lib64")
+cuda_include_directories(${CUDA_INC_PATH} ${CUDA_HELPER_PATH})
+include_directories(${CUDA_INC_PATH} ${CUDA_HELPER_PATH})
+cuda_add_library(bdmcuda ${KERNELS} OPTIONS -arch sm_60)
+target_link_libraries(biodynamo bdmcuda)
 
 # add custom clean target for shared library
 add_custom_target(libbdmclean COMMAND ${CMAKE_COMMAND} -P "${CMAKE_BINARY_DIR}/CMakeFiles/biodynamo.dir/cmake_clean.cmake")
