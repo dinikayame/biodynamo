@@ -139,6 +139,7 @@ set(CUDA_HOST_COMPILER "/usr/bin/")
 # CUDA 8.0 is not compatible with gcc > 5
 set(NVCCFLAGS="--compiler-bindir ${CUDA_HOST_COMPILER}")
 # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11" )
 set(CUDA_PATH "/usr/local/cuda-8.0")
 set(CUDA_INC_PATH "${CUDA_PATH}/include")
 set(CUDA_HELPER_PATH "${CUDA_PATH}/samples/common/inc")

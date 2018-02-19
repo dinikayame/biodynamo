@@ -9,6 +9,7 @@
 #include "param.h"
 
 #include <fstream>
+#include <iomanip>
 
 namespace bdm {
 
@@ -31,7 +32,11 @@ void ApplyBoundingBox(TSO* cell, double lb, double rb) {
 template <typename TGrid = Grid<>>
 class DisplacementOp {
  public:
-  DisplacementOp() {}
+  DisplacementOp() {
+    if (!Param::use_gpu_) {
+      remove("cpu.txt");
+    }
+  }
   ~DisplacementOp() {}
 
   template <typename TContainer>
@@ -119,6 +124,7 @@ class DisplacementOp {
 
       assert(cell.GetMass() != 0 && "The mass of a cell was found to be zero!");
       double mh = h / cell.GetMass();
+      // std::cout << "mh = " << mh << std::endl;
       // adding the physics translation (scale by weight) if important enough
       if (physical_translation) {
         // We scale the move with mass and time step
@@ -143,11 +149,22 @@ class DisplacementOp {
       cell_movements[i] = movement_at_next_step;
     }
 
-    // remove("cpu.txt");
-    // std::ofstream ofs("cpu.txt", std::ofstream::out);
-    // for (size_t k = 0; k < cell_movements.size(); k++) {
-    //   ofs << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
+    // uint32_t N = cells->size();
+
+    // for (size_t k = 0; k < N; k++) {
+    //   std::cout << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
     // }
+
+    // auto mymax = [](size_t size, size_t own_size) {
+    //   size_t ret = size >= own_size ? own_size : size;
+    //   return ret;
+    // };
+
+    // std::ofstream ofs("cpu.txt", std::ofstream::out);
+    // for (size_t k = 0; k < N; k++) {
+    //   ofs << std::setprecision(10) << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
+    // }
+    // ofs << std::endl << std::endl;
     // ofs.close();
 
 // set new positions after all updates have been calculated

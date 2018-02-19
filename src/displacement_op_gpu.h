@@ -6,6 +6,7 @@
 #include "resource_manager.h"
 
 #include <fstream>
+#include <iomanip>
 
 namespace bdm {
 
@@ -15,11 +16,15 @@ using std::array;
 template <typename TGrid = Grid<>, typename TResourceManager = ResourceManager<>>
 class DisplacementOpGpu {
  public:
-  DisplacementOpGpu() {}
+  DisplacementOpGpu() {
+    if (Param::use_gpu_) {
+      remove("gpu.txt");
+    }
+  }
   ~DisplacementOpGpu() {}
 
   template <typename TContainer>
-  void operator()(TContainer* cells, uint16_t type_idx) const {
+  void operator()(TContainer* cells, uint16_t type_idx) {
     auto& grid = TGrid::GetInstance();
 
     std::vector<std::array<double,3 >> cell_movements(cells->size());
@@ -31,6 +36,7 @@ class DisplacementOpGpu {
     uint32_t N = cells->size();
     std::array<uint32_t, 3> num_boxes_axis;
     std::array<int32_t, 3> grid_dimensions;
+    double squared_radius = grid.GetLargestObjectSize()*grid.GetLargestObjectSize();
 
     // We need to create a mass vector, because it is not stored by default in
     // a cell container
@@ -39,15 +45,49 @@ class DisplacementOpGpu {
     grid.GetGPUBoxData(&starts, &lengths);
     grid.GetGridData(&box_length, num_boxes_axis, grid_dimensions);
 
-    std::cout << "Launching CUDA kernel" << std::endl;
+    // If this is the first time we perform physics on GPU using CUDA
+    if (cdo_ == nullptr) {
+      // Allocate 25% more memory so we don't need to reallocate GPU memory
+      // for every (small) change
+      uint32_t new_N = static_cast<uint32_t>(1.25*N);
+      uint32_t new_num_boxes = static_cast<uint32_t>(1.25*starts.size());
 
-    displacement_op_cuda(cells->GetPositionPtr(), cells->GetDiameterPtr(), cells->GetTractorForcePtr(), cells->GetAdherencePtr(), mass.data(), &(Param::simulation_time_step_), &(Param::simulation_max_displacement_), &N, starts.data(), lengths.data(), successors.data(), &box_length, num_boxes_axis.data(), grid_dimensions.data(), cell_movements.data()->data());
+      // Store these extende buffer sizes for future reference
+      N_ = new_N;
+      num_boxes_ = new_num_boxes;
 
-    // remove("gpu.txt");
+      // Allocate required GPU memory
+      cdo_ = new CudaDisplacementOp(new_N, new_num_boxes);
+    } else {
+      // If the number of simulation objects increased
+      if (N >= N_) {
+        std::cout << "\nThe number of cells increased signficantly (from " << N_ << " to " << N << "), so we allocate bigger GPU buffers\n" << std::endl;
+        uint32_t new_N = static_cast<uint32_t>(1.25*N);
+        N_ = new_N;
+        cdo_->resize_cell_buffers(new_N);
+      }
+
+      // If the neighbor grid size increased 
+      if (starts.size() >= num_boxes_) {
+        std::cout << "\nThe number of boxes increased signficantly (from " << num_boxes_ << " to " << starts.size() << "), so we allocate bigger GPU buffers\n" << std::endl;
+        uint32_t new_num_boxes = static_cast<uint32_t>(1.25*starts.size());
+        num_boxes_ = new_num_boxes;
+        cdo_->resize_grid_buffers(new_num_boxes);
+      }
+    }
+
+    cdo_->displacement_op_cuda(cells->GetPositionPtr(), cells->GetDiameterPtr(), cells->GetTractorForcePtr(), cells->GetAdherencePtr(), cells->GetBoxIdPtr(), mass.data(), &(Param::simulation_time_step_), &(Param::simulation_max_displacement_), &squared_radius, &N, starts.data(), lengths.data(), successors.data(), &box_length, num_boxes_axis.data(), grid_dimensions.data(), cell_movements.data()->data());
+
+    // auto mymax = [](size_t size, size_t own_size) {
+    //   size_t ret = size >= own_size ? own_size : size;
+    //   return ret;
+    // };
+
     // std::ofstream ofs("gpu.txt", std::ofstream::out);
-    // for (size_t k = 0; k < cell_movements.size(); k++) {
-    //   ofs << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
+    // for (size_t k = 0; k < N; k++) {
+    //   ofs << std::setprecision(10) << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
     // }
+    // ofs << std::endl << std::endl;
     // ofs.close();
 
 // set new positions after all updates have been calculated
@@ -66,6 +106,11 @@ class DisplacementOpGpu {
       cell.SetTractorForce({0, 0, 0});
     }
   }
+
+ private:
+  CudaDisplacementOp* cdo_ = nullptr;
+  uint32_t num_boxes_ = 0;
+  uint32_t N_ = 0;
 };
 
 }  // namespace bdm

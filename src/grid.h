@@ -663,8 +663,8 @@ class Grid {
 
   bool HasGrown() { return has_grown_; }
 
-  std::array<uint64_t, 3> GetBoxCoordinates(size_t box_idx) const {
-    std::array<uint64_t, 3> box_coord;
+  std::array<uint32_t, 3> GetBoxCoordinates(size_t box_idx) const {
+    std::array<uint32_t, 3> box_coord;
     box_coord[2] = box_idx / num_boxes_xy_;
     auto remainder = box_idx % num_boxes_xy_;
     box_coord[1] = remainder / num_boxes_axis_[0];

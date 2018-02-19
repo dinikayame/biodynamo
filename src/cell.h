@@ -137,6 +137,7 @@ BDM_SIM_OBJECT(Cell, SimulationObject) {
   double* GetDiameterPtr() { return diameter_.data(); }
   double* GetTractorForcePtr() { return tractor_force_.data()->data(); }
   double* GetAdherencePtr() { return adherence_.data(); }
+  uint32_t* GetBoxIdPtr() { return box_idx_.data(); }
 
   void FillMassVector(std::vector<double>* mass) {
     for (size_t i = 0; i < diameter_.size(); i++) {
@@ -220,9 +221,9 @@ BDM_SIM_OBJECT(Cell, SimulationObject) {
                                       diameter_[kIdx], iof_coefficient, force);
   }
 
-  uint64_t GetBoxIdx() const { return box_idx_[kIdx]; }
+  uint32_t GetBoxIdx() const { return box_idx_[kIdx]; }
 
-  void SetBoxIdx(uint64_t idx) { box_idx_[kIdx] = idx; }
+  void SetBoxIdx(uint32_t idx) { box_idx_[kIdx] = idx; }
 
  protected:
   /// Returns the position in the polar coordinate system (cylindrical or
@@ -252,7 +253,7 @@ BDM_SIM_OBJECT(Cell, SimulationObject) {
   vec<std::vector<TBiologyModuleVariant>> biology_modules_;
 
   /// Grid box index
-  vec<uint64_t> box_idx_;
+  vec<uint32_t> box_idx_;
 };
 
 // ----------------------------------------------------------------------------

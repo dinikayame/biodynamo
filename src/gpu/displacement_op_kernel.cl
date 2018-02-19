@@ -96,11 +96,11 @@ __kernel void collide(__global double* positions,
                       __global double* result) {
   uint tidx = get_global_id(0);
   if (tidx < N) {
-    // if (tidx == 21) {
+    if (tidx == 0) {
       // Apply tractor forces
-      result[3*tidx + 0] += timestep * tractor_force[3*tidx + 0];
-      result[3*tidx + 1] += timestep * tractor_force[3*tidx + 1];
-      result[3*tidx + 2] += timestep * tractor_force[3*tidx + 2];
+      result[3*tidx + 0] = timestep * tractor_force[3*tidx + 0];
+      result[3*tidx + 1] = timestep * tractor_force[3*tidx + 1];
+      result[3*tidx + 2] = timestep * tractor_force[3*tidx + 2];
       // printf(\"cell_movement = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
 
       double3 pos;
@@ -133,7 +133,7 @@ __kernel void collide(__global double* positions,
         result[3*tidx + 0] += collision_force.x * mh;
         result[3*tidx + 1] += collision_force.y * mh;
         result[3*tidx + 2] += collision_force.z * mh;
-        // printf(\"cell_movement = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
+        // printf(\"cell_movement (1) = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
 
         if (norm(collision_force) * mh > max_displacement) {
           result[3*tidx + 0] = max_displacement;
@@ -142,9 +142,9 @@ __kernel void collide(__global double* positions,
         }
       }
 
-      // printf(\"cell_movement = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
+      // printf(\"cell_movement (2) = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
     }
-  // }
+  }
 }
 
 __kernel void clear_force_opencl(__global double* result, uint N) {

@@ -92,6 +92,14 @@ struct Param {
   ///     max_bound = 100
   static double max_bound_;
 
+  /// The number of time steps to run the simulation for.\n
+  /// Default value: `0`\n
+  /// TOML config file:
+  ///
+  ///     [simulation]
+  ///     simulation_steps = 100
+  static unsigned simulation_steps_;
+
   // visualization values ------------------------------------------------------
 
   /// Use ParaView Catalyst for live visualization.\n
