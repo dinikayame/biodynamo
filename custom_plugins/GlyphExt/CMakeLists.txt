@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
+project(GlyphExt)
 # Locate ParaView build and then import CMake configuration, 
 # macros etc. from it.
 FIND_PACKAGE(ParaView REQUIRED)

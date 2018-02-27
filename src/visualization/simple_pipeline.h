@@ -45,8 +45,12 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
     session_manager_ = proxy_manager_->GetActiveSessionProxyManager();
     controller_ = vtkSMParaViewPipelineControllerWithRendering::New();
     plugin_manager_ = vtkSMPluginManager::New();
+#ifdef __APPLE__
+       std::string plugin_path = std::string(std::getenv("ParaView_DIR")) + "/../../../bin/paraview.app/Contents/MacOS/plugins/libvtkPVGlyphFilterExt.dylib";
+#else
+       std::string plugin_path = std::string(std::getenv("ParaView_DIR")) + "/../../paraview-5.4/plugins/libvtkPVGlyphFilterExt.so";
+#endif
     // Load custom plugin to enable cylinder glyph scaling
-    std::string plugin_path = std::string(std::getenv("ParaView_DIR")) + "/../../paraview-5.4/plugins/libvtkPVGlyphFilterExt.so";
     if (!plugin_manager_->LoadLocalPlugin(plugin_path.c_str())) {
       Fatal("LoadLocalPlugin",
             "Was unable to load our custom visualzation plugin. Do you have ParaView_DIR set in your environmental variables?");
