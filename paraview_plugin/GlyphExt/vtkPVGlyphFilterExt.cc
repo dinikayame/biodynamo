@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   ParaView
-  Module:    vtkPVGlyphFilterExt.cxx
+  Module:    vtkPVGlyphFilterExt.cc
 
   Copyright (c) Kitware, Inc.
   All rights reserved.

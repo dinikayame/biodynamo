@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkGlyph3DExt.cxx
+  Module:    vtkGlyph3DExt.cc
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -406,7 +406,7 @@ bool vtkGlyph3DExt::Execute(
       }
     }
 
-    if ( haveNormals && inNormals ) 
+    if ( haveNormals && inNormals )
     {
       if(inNormals->GetNumberOfComponents()>3)
       {
