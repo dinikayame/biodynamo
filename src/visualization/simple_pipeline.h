@@ -132,9 +132,10 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
           source_name = "CylinderSource";
           scale_mode = 4;
         } else if (shapes_[i] != Shape::kSphere) {
-          std::cout << "We currently support only spherical and cylindrical "
-                       "shaped objects for visualization. Received value "
-                    << shapes_[i] << std::endl;
+          Warning("CreatePipeline",
+                  "We currently support only spherical and cylindrical "
+                  "shaped objects for visualization. Received value %d",
+                  shapes_[i]);
         }
 
         // Create a Glyph filter
@@ -174,8 +175,9 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
       } else if (vtk_object->IsA("vtkImageData")) {
         real_producer->SetOutput(vtkImageData::SafeDownCast(vtk_object));
       } else {
-        std::cout << "Object of type " << vtk_object->GetClassName()
-                  << " is not supported for visualization" << std::endl;
+        Warning("CreatePipeline",
+                "Object of type %s is not supported for visualization",
+                vtk_object->GetClassName());
       }
 
       // Record the producer for updates
