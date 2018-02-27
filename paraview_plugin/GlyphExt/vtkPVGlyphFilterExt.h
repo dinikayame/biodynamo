@@ -18,9 +18,11 @@
  * over glyph placement.
  *
  *
- * vtkPVGlyphFilterExt extends vtkGlyph3DP for adding control over which points are
+ * vtkPVGlyphFilterExt extends vtkGlyph3DP for adding control over which points
+ * are
  * glyphed using \c GlyphMode. Three modes are now provided:
- * \li ALL_POINTS: all points in the input dataset are glyphed. This same as using
+ * \li ALL_POINTS: all points in the input dataset are glyphed. This same as
+ * using
  * vtkGlyph3DP directly.
  *
  * \li EVERY_NTH_POINT: every n-th point in the input dataset when iterated
@@ -28,43 +30,49 @@
  * the counter resets every on block. In parallel, independent counter is used
  * on each rank. Use \c Stride to control now may points to skip.
  *
- * \li SPATIALLY_UNIFORM_DISTRIBUTION: points close to a randomly sampled spatial
- * distribution of points are glyphed. \c Seed controls the seed point for the random
- * number generator (vtkMinimalStandardRandomSequence). \c MaximumNumberOfSamplePoints
- * can be used to limit the number of sample points used for random sampling. This
- * doesn't not equal the number of points actually glyphed, since that depends on
- * several factors. In parallel, this filter ensures that spatial bounds are collected
+ * \li SPATIALLY_UNIFORM_DISTRIBUTION: points close to a randomly sampled
+ * spatial
+ * distribution of points are glyphed. \c Seed controls the seed point for the
+ * random
+ * number generator (vtkMinimalStandardRandomSequence). \c
+ * MaximumNumberOfSamplePoints
+ * can be used to limit the number of sample points used for random sampling.
+ * This
+ * doesn't not equal the number of points actually glyphed, since that depends
+ * on
+ * several factors. In parallel, this filter ensures that spatial bounds are
+ * collected
  * across all ranks for generating identical sample points.
 */
 
-#ifndef vtkPVGlyphFilter_h
-#define vtkPVGlyphFilter_h
+#ifndef PARAVIEW_PLUGIN_GLYPHEXT_VTKPVGLYPHFILTEREXT_H_
+#define PARAVIEW_PLUGIN_GLYPHEXT_VTKPVGLYPHFILTEREXT_H_
 
 #include "vtkGlyph3DExt.h"
-#include "vtkPVVTKExtensionsDefaultModule.h" //needed for exports
+#include "vtkPVVTKExtensionsDefaultModule.h"  // needed for exports
 
 class vtkMultiProcessController;
 
-class VTKPVVTKEXTENSIONSDEFAULT_EXPORT vtkPVGlyphFilterExt : public vtkGlyph3DExt
-{
-public:
-  enum GlyphModeType
-  {
+class VTKPVVTKEXTENSIONSDEFAULT_EXPORT vtkPVGlyphFilterExt
+    : public vtkGlyph3DExt {
+ public:
+  enum GlyphModeType {
     ALL_POINTS,
     EVERY_NTH_POINT,
     SPATIALLY_UNIFORM_DISTRIBUTION
   };
 
   vtkTypeMacro(vtkPVGlyphFilterExt, vtkGlyph3DExt);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;  // NOLINT
   static vtkPVGlyphFilterExt* New();
 
   //@{
   /**
    * Get/Set the vtkMultiProcessController to use for parallel processing.
-   * By default, the vtkMultiProcessController::GetGlobalController() will be used.
+   * By default, the vtkMultiProcessController::GetGlobalController() will be
+   * used.
    */
-  void SetController(vtkMultiProcessController*);
+  void SetController(vtkMultiProcessController* controller);
   vtkGetObjectMacro(Controller, vtkMultiProcessController);
   //@}
 
@@ -106,18 +114,19 @@ public:
   /**
    * Overridden to create output data of appropriate type.
    */
-  virtual int ProcessRequest(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) VTK_OVERRIDE;
+  virtual int ProcessRequest(vtkInformation*, vtkInformationVector**,
+                             vtkInformationVector*) VTK_OVERRIDE;
 
-protected:
+ protected:
   vtkPVGlyphFilterExt();
   ~vtkPVGlyphFilterExt();
   //@}
 
   // Standard Pipeline methods
-  virtual int RequestData(
-    vtkInformation*, vtkInformationVector**, vtkInformationVector*) VTK_OVERRIDE;
-  virtual int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int RequestData(vtkInformation*, vtkInformationVector**,
+                          vtkInformationVector*) VTK_OVERRIDE;
+  virtual int RequestDataObject(vtkInformation*, vtkInformationVector**,
+                                vtkInformationVector*);
   virtual int FillInputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
   virtual int FillOutputPortInformation(int, vtkInformation*) VTK_OVERRIDE;
 
@@ -127,12 +136,14 @@ protected:
   virtual int IsPointVisible(vtkDataSet* ds, vtkIdType ptId) VTK_OVERRIDE;
 
   /**
-   * Returns true if input Scalars and Vectors are compatible, otherwise returns 0.
+   * Returns true if input Scalars and Vectors are compatible, otherwise returns
+   * 0.
    */
   bool IsInputArrayToProcessValid(vtkDataSet* input);
 
   /**
-   * Returns true if input Scalars and Vectors are cell attributes, otherwise returns 0.
+   * Returns true if input Scalars and Vectors are cell attributes, otherwise
+   * returns 0.
    */
   bool UseCellCenters(vtkDataSet* input);
 
@@ -148,11 +159,13 @@ protected:
 
   /**
    * Method called in RequestData() to do the actual data processing. This will
-   * apply a Cell Centers before the Glyph. The \c input, filling up the \c output
+   * apply a Cell Centers before the Glyph. The \c input, filling up the \c
+   * output
    * based on the filter parameters.
    */
-  virtual bool ExecuteWithCellCenters(
-    vtkDataSet* input, vtkInformationVector* sourceVector, vtkPolyData* output);
+  virtual bool ExecuteWithCellCenters(vtkDataSet* input,
+                                      vtkInformationVector* sourceVector,
+                                      vtkPolyData* output);
 
   int GlyphMode;
   int MaximumNumberOfSamplePoints;
@@ -160,7 +173,7 @@ protected:
   int Stride;
   vtkMultiProcessController* Controller;
 
-private:
+ private:
   vtkPVGlyphFilterExt(const vtkPVGlyphFilterExt&) VTK_DELETE_FUNCTION;
   void operator=(const vtkPVGlyphFilterExt&) VTK_DELETE_FUNCTION;
 
@@ -168,4 +181,4 @@ private:
   vtkInternals* Internals;
 };
 
-#endif
+#endif  // PARAVIEW_PLUGIN_GLYPHEXT_VTKPVGLYPHFILTEREXT_H_

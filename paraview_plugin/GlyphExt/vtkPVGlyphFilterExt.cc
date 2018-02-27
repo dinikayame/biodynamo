@@ -43,8 +43,7 @@
 #include <set>
 #include <vector>
 
-class vtkPVGlyphFilterExt::vtkInternals
-{
+class vtkPVGlyphFilterExt::vtkInternals {
   vtkBoundingBox Bounds;
   double NearestPointRadius;
   std::vector<vtkTuple<double, 3> > Points;
@@ -53,10 +52,8 @@ class vtkPVGlyphFilterExt::vtkInternals
 
   vtkNew<vtkOctreePointLocator> Locator;
 
-  void SetupLocator(vtkDataSet* ds)
-  {
-    if (this->Locator->GetDataSet() == ds)
-    {
+  void SetupLocator(vtkDataSet* ds) {
+    if (this->Locator->GetDataSet() == ds) {
       return;
     }
 
@@ -66,25 +63,24 @@ class vtkPVGlyphFilterExt::vtkInternals
 
     this->PointIds.clear();
     std::set<vtkIdType> pointset;
-    for (std::vector<vtkTuple<double, 3> >::iterator iter = this->Points.begin(),
-                                                     end = this->Points.end();
-         iter != end; ++iter)
-    {
+    for (std::vector<vtkTuple<double, 3> >::iterator
+             iter = this->Points.begin(),
+             end = this->Points.end();
+         iter != end; ++iter) {
       double dist2;
       vtkIdType ptId = this->Locator->FindClosestPointWithinRadius(
-        this->NearestPointRadius, iter->GetData(), dist2);
-      if (ptId >= 0)
-      {
+          this->NearestPointRadius, iter->GetData(), dist2);
+      if (ptId >= 0) {
         pointset.insert(ptId);
       }
     }
-    this->PointIds.insert(this->PointIds.begin(), pointset.begin(), pointset.end());
+    this->PointIds.insert(this->PointIds.begin(), pointset.begin(),
+                          pointset.end());
     this->NextPointId = 0;
   }
 
-public:
-  void Reset()
-  {
+ public:
+  void Reset() {
     this->Bounds.Reset();
     this->Points.clear();
     this->Locator->Initialize();
@@ -94,11 +90,10 @@ public:
   //---------------------------------------------------------------------------
   // Update internal datastructures for the given dataset. This will collect
   // bounds information for all datasets for SPATIALLY_UNIFORM_DISTRIBUTION.
-  void UpdateWithDataset(vtkDataSet* ds, vtkPVGlyphFilterExt* self)
-  {
+  void UpdateWithDataset(vtkDataSet* ds, vtkPVGlyphFilterExt* self) {
     assert(ds != NULL && self != NULL);
-    if (self->GetGlyphMode() != vtkPVGlyphFilterExt::SPATIALLY_UNIFORM_DISTRIBUTION)
-    {
+    if (self->GetGlyphMode() !=
+        vtkPVGlyphFilterExt::SPATIALLY_UNIFORM_DISTRIBUTION) {
       // nothing to do.
       return;
     }
@@ -106,8 +101,7 @@ public:
     // collect local bounds information.
     double bds[6];
     ds->GetBounds(bds);
-    if (vtkBoundingBox::IsValid(bds))
-    {
+    if (vtkBoundingBox::IsValid(bds)) {
       this->Bounds.AddBounds(bds);
     }
   }
@@ -117,20 +111,17 @@ public:
   // information among all ranks.
   // Subsquently, we also build the list of random sample points using the
   // synchronized bounds.
-  void SynchronizeGlobalInformation(vtkPVGlyphFilterExt* self)
-  {
-    if (self->GetGlyphMode() != vtkPVGlyphFilterExt::SPATIALLY_UNIFORM_DISTRIBUTION)
-    {
-      return; // nothing to do.
+  void SynchronizeGlobalInformation(vtkPVGlyphFilterExt* self) {
+    if (self->GetGlyphMode() !=
+        vtkPVGlyphFilterExt::SPATIALLY_UNIFORM_DISTRIBUTION) {
+      return;  // nothing to do.
     }
 
     vtkMultiProcessController* controller = self->GetController();
-    if (controller && controller->GetNumberOfProcesses() > 1)
-    {
-      double local_min[3] = { VTK_DOUBLE_MAX, VTK_DOUBLE_MAX, VTK_DOUBLE_MAX };
-      double local_max[3] = { VTK_DOUBLE_MIN, VTK_DOUBLE_MIN, VTK_DOUBLE_MIN };
-      if (this->Bounds.IsValid())
-      {
+    if (controller && controller->GetNumberOfProcesses() > 1) {
+      double local_min[3] = {VTK_DOUBLE_MAX, VTK_DOUBLE_MAX, VTK_DOUBLE_MAX};
+      double local_max[3] = {VTK_DOUBLE_MIN, VTK_DOUBLE_MIN, VTK_DOUBLE_MIN};
+      if (this->Bounds.IsValid()) {
         this->Bounds.GetMinPoint(local_min[0], local_min[1], local_min[2]);
         this->Bounds.GetMaxPoint(local_max[0], local_max[1], local_max[2]);
       }
@@ -139,12 +130,11 @@ public:
       controller->AllReduce(local_min, global_min, 3, vtkCommunicator::MIN_OP);
       controller->AllReduce(local_max, global_max, 3, vtkCommunicator::MAX_OP);
 
-      this->Bounds.SetBounds(
-        global_min[0], global_max[0], global_min[1], global_max[1], global_min[2], global_max[2]);
+      this->Bounds.SetBounds(global_min[0], global_max[0], global_min[1],
+                             global_max[1], global_min[2], global_max[2]);
     }
 
-    if (!this->Bounds.IsValid())
-    {
+    if (!this->Bounds.IsValid()) {
       return;
     }
 
@@ -152,44 +142,39 @@ public:
     vtkNew<vtkMinimalStandardRandomSequence> randomGenerator;
     randomGenerator->SetSeed(self->GetSeed());
     this->Points.resize(self->GetMaximumNumberOfSamplePoints());
-    for (vtkIdType cc = 0; cc < self->GetMaximumNumberOfSamplePoints(); cc++)
-    {
+    for (vtkIdType cc = 0; cc < self->GetMaximumNumberOfSamplePoints(); cc++) {
       vtkTuple<double, 3>& tuple = this->Points[cc];
       randomGenerator->Next();
-      tuple[0] = randomGenerator->GetRangeValue(
-        this->Bounds.GetMinPoint()[0], this->Bounds.GetMaxPoint()[0]);
+      tuple[0] = randomGenerator->GetRangeValue(this->Bounds.GetMinPoint()[0],
+                                                this->Bounds.GetMaxPoint()[0]);
       randomGenerator->Next();
-      tuple[1] = randomGenerator->GetRangeValue(
-        this->Bounds.GetMinPoint()[1], this->Bounds.GetMaxPoint()[1]);
+      tuple[1] = randomGenerator->GetRangeValue(this->Bounds.GetMinPoint()[1],
+                                                this->Bounds.GetMaxPoint()[1]);
       randomGenerator->Next();
-      tuple[2] = randomGenerator->GetRangeValue(
-        this->Bounds.GetMinPoint()[2], this->Bounds.GetMaxPoint()[2]);
+      tuple[2] = randomGenerator->GetRangeValue(this->Bounds.GetMinPoint()[2],
+                                                this->Bounds.GetMaxPoint()[2]);
     }
 
     // we use diagonal, instead of actual length for each side to avoid the
     // issue with one of the lengths being 0.
     double side = std::sqrt(this->Bounds.GetDiagonalLength());
     double volume = side * side * side;
-    if (volume > 0.0)
-    {
+    if (volume > 0.0) {
       assert(volume > 0.0);
       assert(self->GetMaximumNumberOfSamplePoints() > 0);
       double volumePerGlyph = volume / self->GetMaximumNumberOfSamplePoints();
       double delta = std::pow(volumePerGlyph, 1.0 / 3.0);
       this->NearestPointRadius = std::pow(2 * delta, 1.0 / 2.0) / 2.0;
-    }
-    else
-    {
+    } else {
       this->NearestPointRadius = 0.0001;
     }
   }
 
   //---------------------------------------------------------------------------
-  inline bool IsPointVisible(vtkDataSet* ds, vtkIdType ptId, vtkPVGlyphFilterExt* self)
-  {
+  inline bool IsPointVisible(vtkDataSet* ds, vtkIdType ptId,
+                             vtkPVGlyphFilterExt* self) {
     assert(ds != NULL && self != NULL);
-    switch (self->GetGlyphMode())
-    {
+    switch (self->GetGlyphMode()) {
       case vtkPVGlyphFilterExt::ALL_POINTS:
         return true;
 
@@ -202,20 +187,20 @@ public:
         this->SetupLocator(ds);
 
         // since PointIds is a sorted list, and we know that IsPointVisible will
-        // be called for in monotonically increasing fashion for a specific ds, we
+        // be called for in monotonically increasing fashion for a specific ds,
+        // we
         // use this->NextPointId to simplify the "contains" check.
 
-        while (
-          (this->NextPointId < this->PointIds.size()) && (this->PointIds[this->NextPointId] < ptId))
-        {
+        while ((this->NextPointId < this->PointIds.size()) &&
+               (this->PointIds[this->NextPointId] < ptId)) {
           // this is need since it is possible (due to ghost cells or other
           // masking employed by vtkGlyph3D) that certain ptIds are never tested
           // since they are rejected earlier on.
           this->NextPointId++;
         }
 
-        if (this->NextPointId < this->PointIds.size() && ptId == this->PointIds[this->NextPointId])
-        {
+        if (this->NextPointId < this->PointIds.size() &&
+            ptId == this->PointIds[this->NextPointId]) {
           this->NextPointId++;
           return true;
         }
@@ -225,56 +210,53 @@ public:
 };
 
 vtkStandardNewMacro(vtkPVGlyphFilterExt);
-vtkCxxSetObjectMacro(vtkPVGlyphFilterExt, Controller, vtkMultiProcessController);
+vtkCxxSetObjectMacro(vtkPVGlyphFilterExt, Controller,
+                     vtkMultiProcessController);
 //-----------------------------------------------------------------------------
 vtkPVGlyphFilterExt::vtkPVGlyphFilterExt()
-  : GlyphMode(vtkPVGlyphFilterExt::ALL_POINTS)
-  , MaximumNumberOfSamplePoints(5000)
-  , Seed(1)
-  , Stride(1)
-  , Controller(0)
-  , Internals(new vtkPVGlyphFilterExt::vtkInternals())
-{
+    : GlyphMode(vtkPVGlyphFilterExt::ALL_POINTS),
+      MaximumNumberOfSamplePoints(5000),
+      Seed(1),
+      Stride(1),
+      Controller(0),
+      Internals(new vtkPVGlyphFilterExt::vtkInternals()) {
   this->SetController(vtkMultiProcessController::GetGlobalController());
 }
 
 //-----------------------------------------------------------------------------
-vtkPVGlyphFilterExt::~vtkPVGlyphFilterExt()
-{
+vtkPVGlyphFilterExt::~vtkPVGlyphFilterExt() {
   this->SetController(NULL);
   delete this->Internals;
 }
 
 //----------------------------------------------------------------------------
-int vtkPVGlyphFilterExt::FillInputPortInformation(int port, vtkInformation* info)
-{
-  if (!this->Superclass::FillInputPortInformation(port, info))
-  {
+int vtkPVGlyphFilterExt::FillInputPortInformation(int port,
+                                                  vtkInformation* info) {
+  if (!this->Superclass::FillInputPortInformation(port, info)) {
     return 0;
   }
 
-  if (port == 0)
-  {
+  if (port == 0) {
     // we can handle composite datasets.
-    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkCompositeDataSet");
+    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(),
+                 "vtkCompositeDataSet");
   }
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkPVGlyphFilterExt::FillOutputPortInformation(int vtkNotUsed(port), vtkInformation* info)
-{
+int vtkPVGlyphFilterExt::FillOutputPortInformation(int vtkNotUsed(port),
+                                                   vtkInformation* info) {
   // now add our info
   info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkDataObject");
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkPVGlyphFilterExt::ProcessRequest(
-  vtkInformation* request, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
-{
-  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
-  {
+int vtkPVGlyphFilterExt::ProcessRequest(vtkInformation* request,
+                                        vtkInformationVector** inputVector,
+                                        vtkInformationVector* outputVector) {
+  if (request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT())) {
     return this->RequestDataObject(request, inputVector, outputVector);
   }
 
@@ -282,26 +264,23 @@ int vtkPVGlyphFilterExt::ProcessRequest(
 }
 
 //----------------------------------------------------------------------------
-int vtkPVGlyphFilterExt::RequestDataObject(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
-{
-  if (vtkCompositeDataSet::GetData(inputVector[0], 0))
-  {
+int vtkPVGlyphFilterExt::RequestDataObject(vtkInformation*,
+                                           vtkInformationVector** inputVector,
+                                           vtkInformationVector* outputVector) {
+  if (vtkCompositeDataSet::GetData(inputVector[0], 0)) {
     vtkMultiBlockDataSet* mds = vtkMultiBlockDataSet::GetData(outputVector, 0);
-    if (mds == NULL)
-    {
+    if (mds == NULL) {
       mds = vtkMultiBlockDataSet::New();
-      outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), mds);
+      outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(),
+                                                 mds);
       mds->FastDelete();
     }
-  }
-  else
-  {
+  } else {
     vtkPolyData* pd = vtkPolyData::GetData(outputVector, 0);
-    if (pd == NULL)
-    {
+    if (pd == NULL) {
       pd = vtkPolyData::New();
-      outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), pd);
+      outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(),
+                                                 pd);
       pd->FastDelete();
     }
   }
@@ -310,77 +289,68 @@ int vtkPVGlyphFilterExt::RequestDataObject(
 
 //----------------------------------------------------------------------------
 int vtkPVGlyphFilterExt::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
-{
+                                     vtkInformationVector** inputVector,
+                                     vtkInformationVector* outputVector) {
   vtkInformationVector* sourceVector = inputVector[1];
 
   this->Internals->Reset();
 
   vtkDataSet* ds = vtkDataSet::GetData(inputVector[0], 0);
   vtkCompositeDataSet* cds = vtkCompositeDataSet::GetData(inputVector[0], 0);
-  if (ds)
-  {
+  if (ds) {
     this->Internals->UpdateWithDataset(ds, this);
     this->Internals->SynchronizeGlobalInformation(this);
 
-    if (!this->IsInputArrayToProcessValid(ds))
-    {
+    if (!this->IsInputArrayToProcessValid(ds)) {
       return 1;
     }
 
     vtkPolyData* outputPD = vtkPolyData::GetData(outputVector);
     assert(outputPD);
-    if (this->UseCellCenters(ds))
-    {
+    if (this->UseCellCenters(ds)) {
       return this->ExecuteWithCellCenters(ds, sourceVector, outputPD) ? 1 : 0;
-    }
-    else
-    {
+    } else {
       return this->Execute(ds, sourceVector, outputPD) ? 1 : 0;
     }
-  }
-  else if (cds)
-  {
-    vtkMultiBlockDataSet* outputMD = vtkMultiBlockDataSet::GetData(outputVector);
+  } else if (cds) {
+    vtkMultiBlockDataSet* outputMD =
+        vtkMultiBlockDataSet::GetData(outputVector);
     assert(outputMD);
 
     outputMD->CopyStructure(cds);
 
     vtkSmartPointer<vtkCompositeDataIterator> iter;
     iter.TakeReference(cds->NewIterator());
-    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
-      vtkDataSet* current = vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
-      if (current)
-      {
+    for (iter->InitTraversal(); !iter->IsDoneWithTraversal();
+         iter->GoToNextItem()) {
+      vtkDataSet* current =
+          vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
+      if (current) {
         this->Internals->UpdateWithDataset(current, this);
       }
     }
     this->Internals->SynchronizeGlobalInformation(this);
 
-    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
-      vtkDataSet* currentDS = vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
-      if (currentDS)
-      {
-        if (!this->IsInputArrayToProcessValid(currentDS))
-        {
+    for (iter->InitTraversal(); !iter->IsDoneWithTraversal();
+         iter->GoToNextItem()) {
+      vtkDataSet* currentDS =
+          vtkDataSet::SafeDownCast(iter->GetCurrentDataObject());
+      if (currentDS) {
+        if (!this->IsInputArrayToProcessValid(currentDS)) {
           continue;
         }
 
         bool res;
         vtkNew<vtkPolyData> outputPD;
-        if (this->UseCellCenters(currentDS))
-        {
-          res = this->ExecuteWithCellCenters(currentDS, sourceVector, outputPD.GetPointer());
-        }
-        else
-        {
+        if (this->UseCellCenters(currentDS)) {
+          res = this->ExecuteWithCellCenters(currentDS, sourceVector,
+                                             outputPD.GetPointer());
+        } else {
           res = this->Execute(currentDS, sourceVector, outputPD.GetPointer());
         }
-        if (!res)
-        {
-          vtkErrorMacro("Glyph generation failed for block: " << iter->GetCurrentFlatIndex());
+        if (!res) {
+          vtkErrorMacro("Glyph generation failed for block: "
+                        << iter->GetCurrentFlatIndex());
           this->Internals->Reset();
           return 0;
         }
@@ -393,19 +363,16 @@ int vtkPVGlyphFilterExt::RequestData(vtkInformation* vtkNotUsed(request),
 }
 
 //-----------------------------------------------------------------------------
-int vtkPVGlyphFilterExt::IsPointVisible(vtkDataSet* ds, vtkIdType ptId)
-{
+int vtkPVGlyphFilterExt::IsPointVisible(vtkDataSet* ds, vtkIdType ptId) {
   return (this->Superclass::IsPointVisible(ds, ptId) != 0) &&
-    (this->Internals->IsPointVisible(ds, ptId, this));
+         (this->Internals->IsPointVisible(ds, ptId, this));
 }
 
 //-----------------------------------------------------------------------------
-bool vtkPVGlyphFilterExt::IsInputArrayToProcessValid(vtkDataSet* input)
-{
+bool vtkPVGlyphFilterExt::IsInputArrayToProcessValid(vtkDataSet* input) {
   // confirm that both scalars and vectors are being used by the Glyph filter,
   // otherwise, the mismatch in array association for the two is not an issue.
-  if (!this->NeedsScalars() || !this->NeedsVectors())
-  {
+  if (!this->NeedsScalars() || !this->NeedsVectors()) {
     return true;
   }
 
@@ -413,15 +380,20 @@ bool vtkPVGlyphFilterExt::IsInputArrayToProcessValid(vtkDataSet* input)
   vtkDataArray* inVectors = this->GetInputArrayToProcess(1, input);
   int inSScalarsAssociation = this->GetInputArrayAssociation(0, input);
   int inVectorsAssociation = this->GetInputArrayAssociation(1, input);
-  if (inSScalarsAssociation != inVectorsAssociation && inSScalars && inVectors)
-  {
+  if (inSScalarsAssociation != inVectorsAssociation && inSScalars &&
+      inVectors) {
     std::string inSScalarsType =
-      (inSScalarsAssociation == vtkDataObject::FIELD_ASSOCIATION_POINTS ? "point" : "cell");
+        (inSScalarsAssociation == vtkDataObject::FIELD_ASSOCIATION_POINTS
+             ? "point"
+             : "cell");
     std::string inVectorsType =
-      (inVectorsAssociation == vtkDataObject::FIELD_ASSOCIATION_POINTS ? "point" : "cell");
+        (inVectorsAssociation == vtkDataObject::FIELD_ASSOCIATION_POINTS
+             ? "point"
+             : "cell");
     vtkWarningMacro(<< "Mismatched attributes:\n"
-                    << inSScalars->GetName() << " is a " << inSScalarsType << " attribute whereas "
-                    << inVectors->GetName() << " is a " << inVectorsType << " attribute.");
+                    << inSScalars->GetName() << " is a " << inSScalarsType
+                    << " attribute whereas " << inVectors->GetName() << " is a "
+                    << inVectorsType << " attribute.");
     return false;
   }
 
@@ -429,76 +401,66 @@ bool vtkPVGlyphFilterExt::IsInputArrayToProcessValid(vtkDataSet* input)
 }
 
 //-----------------------------------------------------------------------------
-bool vtkPVGlyphFilterExt::NeedsScalars()
-{
-  if (this->ScaleMode == VTK_SCALE_BY_SCALAR)
-  {
+bool vtkPVGlyphFilterExt::NeedsScalars() {
+  if (this->ScaleMode == VTK_SCALE_BY_SCALAR) {
     return true;
   }
-  if (this->ColorMode == VTK_COLOR_BY_SCALAR)
-  {
+  if (this->ColorMode == VTK_COLOR_BY_SCALAR) {
     return true;
   }
-  if (this->IndexMode == VTK_INDEXING_BY_SCALAR)
-  {
+  if (this->IndexMode == VTK_INDEXING_BY_SCALAR) {
     return true;
   }
   return false;
 }
 
 //-----------------------------------------------------------------------------
-bool vtkPVGlyphFilterExt::NeedsVectors()
-{
-  if (this->ScaleMode == VTK_SCALE_BY_VECTOR || this->ScaleMode == VTK_SCALE_BY_VECTORCOMPONENTS || this->ScaleMode == VTK_SCALE_BY_NORMAL)
-  {
+bool vtkPVGlyphFilterExt::NeedsVectors() {
+  if (this->ScaleMode == VTK_SCALE_BY_VECTOR ||
+      this->ScaleMode == VTK_SCALE_BY_VECTORCOMPONENTS ||
+      this->ScaleMode == VTK_SCALE_BY_NORMAL) {
     return true;
   }
-  if (this->ColorMode == VTK_COLOR_BY_VECTOR)
-  {
+  if (this->ColorMode == VTK_COLOR_BY_VECTOR) {
     return true;
   }
-  if (this->VectorMode == VTK_USE_VECTOR)
-  {
+  if (this->VectorMode == VTK_USE_VECTOR) {
     return true;
   }
-  if (this->IndexMode == VTK_INDEXING_BY_VECTOR)
-  {
+  if (this->IndexMode == VTK_INDEXING_BY_VECTOR) {
     return true;
   }
   return false;
 }
 
 //-----------------------------------------------------------------------------
-bool vtkPVGlyphFilterExt::UseCellCenters(vtkDataSet* input)
-{
+bool vtkPVGlyphFilterExt::UseCellCenters(vtkDataSet* input) {
   int inSScalarsAssociation = this->GetInputArrayAssociation(0, input);
   int inVectorsAssociation = this->GetInputArrayAssociation(1, input);
   return inSScalarsAssociation == vtkDataObject::FIELD_ASSOCIATION_CELLS ||
-    inVectorsAssociation == vtkDataObject::FIELD_ASSOCIATION_CELLS;
+         inVectorsAssociation == vtkDataObject::FIELD_ASSOCIATION_CELLS;
 }
 
 //-----------------------------------------------------------------------------
 bool vtkPVGlyphFilterExt::ExecuteWithCellCenters(
-  vtkDataSet* input, vtkInformationVector* sourceVector, vtkPolyData* output)
-{
+    vtkDataSet* input, vtkInformationVector* sourceVector,
+    vtkPolyData* output) {
   vtkNew<vtkCellCenters> cellCenters;
   cellCenters->SetInputData(input);
   cellCenters->Update();
   input = cellCenters->GetOutput();
   vtkDataArray* inSScalars = input->GetPointData()->GetArray(
-    this->GetInputArrayInformation(0)->Get(vtkDataObject::FIELD_NAME()));
+      this->GetInputArrayInformation(0)->Get(vtkDataObject::FIELD_NAME()));
   vtkDataArray* inVectors = input->GetPointData()->GetArray(
-    this->GetInputArrayInformation(1)->Get(vtkDataObject::FIELD_NAME()));
+      this->GetInputArrayInformation(1)->Get(vtkDataObject::FIELD_NAME()));
   return this->Execute(input, sourceVector, output, inSScalars, inVectors);
 }
 
 //-----------------------------------------------------------------------------
-void vtkPVGlyphFilterExt::PrintSelf(ostream& os, vtkIndent indent)
-{
+void vtkPVGlyphFilterExt::PrintSelf(ostream& os, vtkIndent indent) {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "GlyphMode: ";
-  switch (this->GlyphMode)
-  {
+  switch (this->GlyphMode) {
     case ALL_POINTS:
       os << "ALL_POINTS" << endl;
       break;
@@ -514,7 +476,9 @@ void vtkPVGlyphFilterExt::PrintSelf(ostream& os, vtkIndent indent)
     default:
       os << "(invalid:" << this->GlyphMode << ")" << endl;
   }
-  os << indent << "MaximumNumberOfSamplePoints: " << this->MaximumNumberOfSamplePoints << endl;
+  os << indent
+     << "MaximumNumberOfSamplePoints: " << this->MaximumNumberOfSamplePoints
+     << endl;
   os << indent << "Seed: " << this->Seed << endl;
   os << indent << "Stride: " << this->Stride << endl;
   os << indent << "Controller: " << this->Controller << endl;

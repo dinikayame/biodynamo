@@ -55,7 +55,7 @@ BDM_SIM_OBJECT(Neuron, Cell) {
 
   void SetScaling(const std::array<double, 3>& s) { scaling_[kIdx] = s; }
   void SetOrientation(const std::array<double, 3>& o) { orient_[kIdx] = o; }
-  
+
   Shape GetShape() { return Shape::kCylinder; }
 
  private:
@@ -301,9 +301,8 @@ inline int Simulate(int argc, const char** argv) {
     cell.SetOrientation(o);
     return cell;
   };
-  ModelInitializer::CreateCellsRandom(Param::min_bound_, Param::max_bound_,
-                                      30, construct_2);
-
+  ModelInitializer::CreateCellsRandom(Param::min_bound_, Param::max_bound_, 30,
+                                      construct_2);
 
   // 3. Define the substances that cells may secrete
   // Order: substance_name, diffusion_coefficient, decay_constant, resolution

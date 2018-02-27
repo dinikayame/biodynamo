@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <map>
 #include <string>
+#include <vector>
 
 #if defined(USE_CATALYST) && !defined(__ROOTCLING__)
 #include <vtkCPDataDescription.h>
@@ -46,14 +47,19 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
     controller_ = vtkSMParaViewPipelineControllerWithRendering::New();
     plugin_manager_ = vtkSMPluginManager::New();
 #ifdef __APPLE__
-       std::string plugin_path = std::string(std::getenv("ParaView_DIR")) + "/../../../bin/paraview.app/Contents/MacOS/plugins/libvtkPVGlyphFilterExt.dylib";
+    std::string plugin_path = std::string(std::getenv("ParaView_DIR")) +
+                              "/../../../bin/paraview.app/Contents/MacOS/"
+                              "plugins/libvtkPVGlyphFilterExt.dylib";
 #else
-       std::string plugin_path = std::string(std::getenv("ParaView_DIR")) + "/../../paraview-5.4/plugins/libvtkPVGlyphFilterExt.so";
+    std::string plugin_path =
+        std::string(std::getenv("ParaView_DIR")) +
+        "/../../paraview-5.4/plugins/libvtkPVGlyphFilterExt.so";
 #endif
     // Load custom plugin to enable cylinder glyph scaling
     if (!plugin_manager_->LoadLocalPlugin(plugin_path.c_str())) {
       Fatal("LoadLocalPlugin",
-            "Was unable to load our custom visualzation plugin. Do you have ParaView_DIR set in your environmental variables?");
+            "Was unable to load our custom visualzation plugin. Do you have "
+            "ParaView_DIR set in your environmental variables?");
     }
   }
 
@@ -126,7 +132,9 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
           source_name = "CylinderSource";
           scale_mode = 4;
         } else if (shapes_[i] != Shape::kSphere) {
-          std::cout << "We currently support only spherical and cylindrical shaped objects for visualization. Received value " << shapes_[i] << std::endl;
+          std::cout << "We currently support only spherical and cylindrical "
+                       "shaped objects for visualization. Received value "
+                    << shapes_[i] << std::endl;
         }
 
         // Create a Glyph filter
@@ -149,9 +157,9 @@ class vtkCPVTKPipeline : public vtkCPPipeline {
               .SetInputArrayToProcess(vtkDataObject::POINT, "diameter_");
         } else if (scale_mode == 4) {
           vtkSMPropertyHelper(glyph, "BDMScalars")
-            .SetInputArrayToProcess(vtkDataObject::POINT, "scaling_");
+              .SetInputArrayToProcess(vtkDataObject::POINT, "scaling_");
           vtkSMPropertyHelper(glyph, "Vectors")
-            .SetInputArrayToProcess(vtkDataObject::POINT, "orient_");
+              .SetInputArrayToProcess(vtkDataObject::POINT, "orient_");
         }
 
         glyph->UpdateVTKObjects();
