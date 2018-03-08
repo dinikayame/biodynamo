@@ -74,7 +74,7 @@
             
               
                 <span class="md-header-nav__parent">
-                  Exercises
+                  Tutorials
                 </span>
               
             
@@ -207,11 +207,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
-      Exercises
+      Tutorials
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-3">
-        Exercises
+        Tutorials
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -307,6 +307,18 @@
   <li class="md-nav__item">
     <a href="../diffusion/" title="Diffusion" class="md-nav__link">
       Diffusion
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../substance_initializers/" title="Substance Initialization" class="md-nav__link">
+      Substance Initialization
     </a>
   </li>
 
@@ -421,7 +433,7 @@ You can also do this from the command line with the following command:</p>
 
 
 <h2 id="export-visualization-files">Export visualization files</h2>
-<p>One way to enable visualization is to export a visualization file every time step 
+<p>One way to enable visualization is to export a visualization file every time step
 (or every N time steps). In the <code>bmd.toml</code> file add the following lines:</p>
 <div class="codehilite"><pre><span></span><span class="k">[visualization]</span>
 <span class="na">export</span> <span class="o">=</span> <span class="s">true</span>
@@ -449,29 +461,10 @@ Run your simulation with <code>biodynamo run</code>.</p>
 </pre></div>
 
 
-<p>And select "Open" as shown below:</p>
-<p><img alt="Open in ParaView" src="../images/open_file.png" /></p>
-<p>Navigate to your simulation directory.
-Then select the files that represent your simulation objects. If you have 
-output over multiple timesteps, import your simulation objects as "Group", as
-shown in the image below:</p>
-<p><img alt="Open as Group" src="../images/select_pvtu.png" /></p>
-<p>Click on the <code>cells_data_</code> entry in the Pipeline Browser and press "Apply". From "Filters", select
-"Search" (or do Ctrl + Space). Search for the "Glyph" filter, Apply it, and set
-the following properties:</p>
-<div class="codehilite"><pre><span></span><span class="n">Glyph</span> <span class="n">Type</span>      <span class="o">=</span> <span class="s1">&#39;Sphere&#39;</span>
-<span class="n">Scalars</span>         <span class="o">=</span> <span class="s1">&#39;diameter_&#39;</span>
-<span class="n">Glyph</span> <span class="n">Mode</span>      <span class="o">=</span> <span class="s1">&#39;All Points&#39;</span>
-<span class="n">Scale</span> <span class="n">Mode</span>      <span class="o">=</span> <span class="s1">&#39;Scalar&#39;</span>
-<span class="n">Scale</span> <span class="n">Factor</span>    <span class="o">=</span> <span class="mi">1</span>
-<span class="n">Coloring</span>        <span class="o">=</span> <span class="s1">&#39;diameter_&#39;</span>
-</pre></div>
-
-
-<p>Press "Apply" to let the changes take effect.</p>
-<p>From "View", select "Animation Panel". This will display some animation settings
-at the bottom of the screen. From the "Mode" select "Real Time".
-Then click the Play button at the top of the screen to run the simulation visualization.</p>
+<p>And select "File-&gt;Load State" as shown below:</p>
+<p><img alt="ParaView Load State" src="../images/pv_load_state.png" /></p>
+<p>Navigate to your simulation directory and select the <code>pvsm</code> file.</p>
+<p><img alt="ParaView Select *.pvsm" src="../images/pv_select_pvsm.png" /></p>
 <!-- ## Live visualization
 
 Another way to enable visualization is through ParaView's live visualization.
@@ -479,7 +472,7 @@ This feature allows you to inspect your simulation while it is running. In your
 `bdm.toml` file you add the following lines:
 
 
-wzxhzdk:5
+wzxhzdk:4
 
  -->
                 
