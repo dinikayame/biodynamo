@@ -538,7 +538,7 @@ git checkout newcastle
 
 
 <h3 id="inspect-the-code">Inspect the code</h3>
-<p>Go into the <code>diffusion</code> directory and open the source file <code>src/diffusion_biology_modules.h</code> in your favorite editor. 
+<p>Go into the <code>diffusion</code> directory and open the source file <code>src/diffusion_biology_modules.h</code> in your favorite editor.
 We can note the following things from its content:</p>
 <h4 id="1-list-the-substances">1. List the substances</h4>
 <div class="codehilite"><pre><span></span><span class="k">enum</span> <span class="n">Substances</span> <span class="p">{</span> <span class="n">kKalium</span> <span class="p">};</span>
@@ -546,7 +546,7 @@ We can note the following things from its content:</p>
 
 
 <p>The extracellular substances that will be used in the simulation are listed in
-an <code>enum</code> data structure. In this case it is just a single substance. According to our C++ 
+an <code>enum</code> data structure. In this case it is just a single substance. According to our C++
 coding style we will prepend the substance's name with the letter "k".</p>
 <h4 id="2-set-up-the-biology-modules">2. Set up the biology modules</h4>
 <p>Open the <code>src/diffusion.h</code> source file.</p>
@@ -636,23 +636,14 @@ it is necessary to run the following command:</p>
 
 
 <h3 id="visualize-the-simulation">Visualize the simulation</h3>
-<p>Open ParaView and navigate to the <code>diffusion</code> directory. Open the <code>cells_data_*</code>
-and <code>Kalium_*</code> files as Group (see the <a href="../visualization/">Visualization</a> exercise as a reference).</p>
-<p>Click on the <code>cells_data_</code> entry in the Pipeline Browser. From "Filters", select
-"Search" (or do <code>Ctrl + Space</code>). Search for the "Glyph" filter, Apply it, and set
-the following properties:</p>
-<div class="codehilite"><pre><span></span><span class="n">Glyph</span> <span class="n">Type</span>      <span class="o">=</span> <span class="s1">&#39;Sphere&#39;</span>
-<span class="n">Scalars</span>         <span class="o">=</span> <span class="s1">&#39;Diameters&#39;</span>
-<span class="n">Scale</span> <span class="n">Mode</span>      <span class="o">=</span> <span class="s1">&#39;Scalar&#39;</span>
-<span class="n">Scale</span> <span class="n">Factor</span>    <span class="o">=</span> <span class="mi">1</span>
-<span class="n">Glyph</span> <span class="n">Mode</span>      <span class="o">=</span> <span class="s1">&#39;All Points&#39;</span>
-</pre></div>
-
-
-<p>Press "Apply" to let the changes take effect.</p>
+<p>Load the generated ParaView state file as described in <a href="../visualization/#export-visualization-files">Section Visualization</a>.</p>
 <p>From "View", select "Animation Panel". This will display some animation settings
 at the bottom of the screen. From the "Mode" select "Real Time".
 Then click the Play button at the top of the screen to run the simulation visualization.</p>
+<video width="100%" controls>
+  <source src="https://cernbox.cern.ch/index.php/s/rzl2Kb4uxny4ZXF/download?path=%2F&files=exported_visualization.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
                 
                   
                 
