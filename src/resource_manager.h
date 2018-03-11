@@ -10,8 +10,10 @@
 #include <utility>
 #include <vector>
 
+#ifdef USE_OPENCL
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
+#endif
 
 #include "backend.h"
 #include "diffusion_grid.h"
