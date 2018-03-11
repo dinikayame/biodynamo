@@ -1,11 +1,12 @@
 # setup google test
 ExternalProject_Add(
   gtest
-  URL "${CMAKE_SOURCE_DIR}/third_party/gtest-1.7.0.zip"
+  URL "${CMAKE_SOURCE_DIR}/third_party/gtest-1.8.0.zip"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/gtest"
   CMAKE_CACHE_ARGS
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
   INSTALL_COMMAND "" # Disable install step
   # Ugly but necessary, in future versions one can use ${binary_dir}
   # in BUILD_BYPRODUCTS

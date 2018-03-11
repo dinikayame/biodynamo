@@ -2,12 +2,28 @@ double norm(double3 v) {
   return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
+double squared_euclidian_distance(__global double* positions, uint idx, uint nidx) {
+  const double dx = positions[3*idx + 0] - positions[3*nidx + 0];
+  const double dy = positions[3*idx + 1] - positions[3*nidx + 1];
+  const double dz = positions[3*idx + 2] - positions[3*nidx + 2];
+  return (dx * dx + dy * dy + dz * dz);
+}
+
 int3 get_box_coordinates(double3 pos, __constant int* grid_dimensions, uint box_length) {
   int3 box_coords;
   box_coords.x = (floor(pos.x) - grid_dimensions[0]) / box_length;
   box_coords.y = (floor(pos.y) - grid_dimensions[1]) / box_length;
   box_coords.z = (floor(pos.z) - grid_dimensions[2]) / box_length;
   return box_coords;
+}
+
+int3 get_box_coordinates_2(uint box_idx, __constant uint* num_boxes_axis_) {
+  int3 box_coord;
+  box_coord.z = box_idx / (num_boxes_axis_[0]*num_boxes_axis_[1]);
+  uint remainder = box_idx % (num_boxes_axis_[0]*num_boxes_axis_[1]);
+  box_coord.y = remainder / num_boxes_axis_[0];
+  box_coord.x = remainder % num_boxes_axis_[0];
+  return box_coord;
 }
 
 uint get_box_id_2(int3 bc,__constant uint* num_boxes_axis) {
@@ -65,14 +81,16 @@ void compute_force(__global double* positions, __global double* diameters, uint 
 void default_force(__global double* positions,
                    __global double* diameters,
                    uint idx, uint start, ushort length,
-                   __global uint* successors,
+                   __global uint* successors, double squared_radius,
                    double3* collision_force) {
   uint nidx = start;
 
   for (ushort nb = 0; nb < length; nb++) {
     // implement logic for within radius here
     if (nidx != idx) {
-      compute_force(positions, diameters, idx, nidx, collision_force);
+      if (squared_euclidian_distance(positions, idx, nidx) < squared_radius) {
+        compute_force(positions, diameters, idx, nidx, collision_force);
+      }
     }
     // traverse linked-list
     nidx = successors[nidx];
@@ -83,9 +101,11 @@ __kernel void collide(__global double* positions,
                       __global double* diameters,
                       __global double* tractor_force,
                       __global double* adherence,
+                      __global uint* box_id,
                       __global double* mass,
                       double timestep,
                       double max_displacement,
+                      double squared_radius,
                       uint N,
                       __global uint* starts,
                       __global ushort* lengths,
@@ -96,54 +116,44 @@ __kernel void collide(__global double* positions,
                       __global double* result) {
   uint tidx = get_global_id(0);
   if (tidx < N) {
-    if (tidx == 0) {
-      // Apply tractor forces
-      result[3*tidx + 0] = timestep * tractor_force[3*tidx + 0];
-      result[3*tidx + 1] = timestep * tractor_force[3*tidx + 1];
-      result[3*tidx + 2] = timestep * tractor_force[3*tidx + 2];
-      // printf(\"cell_movement = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
+    // Apply tractor forces
+    result[3*tidx + 0] = timestep * tractor_force[3*tidx + 0];
+    result[3*tidx + 1] = timestep * tractor_force[3*tidx + 1];
+    result[3*tidx + 2] = timestep * tractor_force[3*tidx + 2];
+    // printf(\"cell_movement = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
 
-      double3 pos;
-      pos.x = positions[3*tidx + 0];
-      pos.y = positions[3*tidx + 1];
-      pos.z = positions[3*tidx + 2];
+    double3 collision_force = (double3)(0, 0, 0);
 
-      double3 collision_force = (double3)(0, 0, 0);
-
-      // Moore neighborhood
-      int3 box_coords = get_box_coordinates(pos, grid_dimensions, box_length);
-      for (int z = -1; z <= 1; z++) {
-        for (int y = -1; y <= 1; y++) {
-          for (int x = -1; x <= 1; x++) {
-            uint bidx = get_box_id_2(box_coords + (int3)(x, y, z), num_boxes_axis);
-            if (lengths[bidx] != 0) {
-              default_force(positions, diameters, tidx, starts[bidx], lengths[bidx], successors, &collision_force);
-            }
+    // Moore neighborhood
+    int3 box_coords = get_box_coordinates_2(box_id[tidx], num_boxes_axis);
+    for (int z = -1; z <= 1; z++) {
+      for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+          uint bidx = get_box_id_2(box_coords + (int3)(x, y, z), num_boxes_axis);
+          if (lengths[bidx] != 0) {
+            default_force(positions, diameters, tidx, starts[bidx], lengths[bidx], successors, squared_radius, &collision_force);
           }
         }
       }
-
-      // Mass needs to non-zero!
-      double mh = timestep / mass[tidx];
-      // printf(\"mh = %f\\n\", mh);
-      // printf(\"mass = %f\\n\", mass[tidx]);
-
-
-      if (norm(collision_force) > adherence[tidx]) {
-        result[3*tidx + 0] += collision_force.x * mh;
-        result[3*tidx + 1] += collision_force.y * mh;
-        result[3*tidx + 2] += collision_force.z * mh;
-        // printf(\"cell_movement (1) = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
-
-        if (norm(collision_force) * mh > max_displacement) {
-          result[3*tidx + 0] = max_displacement;
-          result[3*tidx + 1] = max_displacement;
-          result[3*tidx + 2] = max_displacement;
-        }
-      }
-
-      // printf(\"cell_movement (2) = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
     }
+
+    // Mass needs to non-zero!
+    double mh = timestep / mass[tidx];
+    // printf(\"mh = %f\\n\", mh);
+
+    if (norm(collision_force) > adherence[tidx]) {
+      result[3*tidx + 0] += collision_force.x * mh;
+      result[3*tidx + 1] += collision_force.y * mh;
+      result[3*tidx + 2] += collision_force.z * mh;
+      // printf(\"cell_movement (1) = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
+
+      if (norm(collision_force) * mh > max_displacement) {
+        result[3*tidx + 0] = max_displacement;
+        result[3*tidx + 1] = max_displacement;
+        result[3*tidx + 2] = max_displacement;
+      }
+    }
+    // printf(\"cell_movement (2) = (%f, %f, %f)\\n\", result[3*tidx + 0], result[3*tidx + 1], result[3*tidx + 2]);
   }
 }
 

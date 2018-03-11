@@ -9,7 +9,6 @@
 #include "cell.h"
 #include "diffusion_op.h"
 #include "displacement_op.h"
-#include "displacement_op_gpu.h"
 #include "gpu/gpu_helper.h"
 #include "op_timer.h"
 #include "resource_manager.h"
@@ -38,8 +37,7 @@ class Scheduler {
                                  "/visualization/simple_pipeline.py");
     }
     if (Param::use_gpu_) {
-      FindGpuDevices();
-      CompileKernels();
+      InitializeGPUEnvironment<>();
     }
   }
 
@@ -98,6 +96,10 @@ class Scheduler {
     grid_->Initialize();
 
     for (unsigned step = 0; step < steps; step++) {
+      if (total_steps_ % 10 == 0) {
+        std::cout << "step " << total_steps_ << std::endl;
+      }
+
       // Simulate
       Execute();
 
@@ -122,10 +124,6 @@ class Scheduler {
               Param::backup_interval_) {
         last_backup_ = Clock::now();
         backup_.Backup(total_steps_);
-      }
-
-      if (total_steps_ % 10 == 0) {
-        std::cout << "step " << total_steps_ << std::endl;
       }
     }
   }
@@ -152,9 +150,8 @@ class Scheduler {
     rm->ApplyOnAllTypes(diffusion_);
     rm->ApplyOnAllTypes(biology_);
     if (Param::use_gpu_) {
-      rm->ApplyOnAllTypes(physics_gpu_);
-    }
-    else if (Param::run_mechanical_interactions_) {
+      rm->ApplyOnAllTypes(physics_);
+    } else if (Param::run_mechanical_interactions_) {
       rm->ApplyOnAllTypes(physics_with_bound_);
     } else if (Param::bound_space_) {
       rm->ApplyOnAllTypes(bound_space_);
@@ -171,7 +168,7 @@ class Scheduler {
 
   OpTimer<DiffusionOp<>> diffusion_ = OpTimer<DiffusionOp<>>("diffusion");
   OpTimer<BiologyModuleOp> biology_ = OpTimer<BiologyModuleOp>("biology");
-  OpTimer<DisplacementOpGpu<>> physics_gpu_ = OpTimer<DisplacementOpGpu<>>("physics_gpu");
+  OpTimer<DisplacementOp<>> physics_ = OpTimer<DisplacementOp<>>("physics");
   OpTimer<DisplacementOp<>> physics_with_bound_ =
       OpTimer<DisplacementOp<>>("physics");
   OpTimer<BoundSpace> bound_space_ = OpTimer<BoundSpace>("bound_space");

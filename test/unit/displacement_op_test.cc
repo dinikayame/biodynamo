@@ -39,7 +39,7 @@ void RunTest() {
   grid.Initialize();
 
   // execute operation
-  DisplacementOp<Grid<ResourceManager<TCompileTimeParam>>> op;
+  DisplacementOpCpu<Grid<ResourceManager<TCompileTimeParam>>> op;
   op(cells, 0);
 
   // check results
@@ -125,7 +125,7 @@ TEST(DisplacementOpTest, ComputeSoaNew) {
   grid.Initialize();
 
   // execute operation
-  DisplacementOp<Grid<ResourceManager<SoaCompileTimeParam<>>>> op;
+  DisplacementOpCpu<Grid<ResourceManager<SoaCompileTimeParam<>>>> op;
   op(cells, 0);
 
   // clang-format off

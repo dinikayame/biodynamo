@@ -44,7 +44,8 @@ if (test)
   find_package(Threads REQUIRED)
 endif()
 
-find_package(CUDA QUIET REQUIRED)
+find_package(CUDA)
+find_package(OpenCL)
 find_package(Git)
 find_package(ROOT REQUIRED COMPONENTS Eve Geom Gui)
 
@@ -131,23 +132,29 @@ if(${VTune_FOUND})
 endif()
 
 # Link to OpenCL
-link_directories("${CMAKE_SOURCE_DIR}/build")
-target_link_libraries(biodynamo OpenCL)
+if (OpenCL_FOUND)
+  add_definitions("-DUSE_OPENCL")
+  link_directories("${CMAKE_SOURCE_DIR}/build")
+  target_link_libraries(biodynamo OpenCL)
+endif()
 
-# Compile CUDA kernels into shared library
-set(CUDA_HOST_COMPILER "/usr/bin/")
-# CUDA 8.0 is not compatible with gcc > 5
-set(NVCCFLAGS="--compiler-bindir ${CUDA_HOST_COMPILER}")
-# set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
-set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11" )
-set(CUDA_PATH "/usr/local/cuda-8.0")
-set(CUDA_INC_PATH "${CUDA_PATH}/include")
-set(CUDA_HELPER_PATH "${CUDA_PATH}/samples/common/inc")
-set(CUDA_LIB_PATH "${CUDA_PATH}/lib64")
-cuda_include_directories(${CUDA_INC_PATH} ${CUDA_HELPER_PATH})
-include_directories(${CUDA_INC_PATH} ${CUDA_HELPER_PATH})
-cuda_add_library(bdmcuda ${KERNELS} OPTIONS -arch sm_60)
-target_link_libraries(biodynamo bdmcuda)
+if (CUDA_FOUND)
+  add_definitions("-DUSE_CUDA")
+  # Compile CUDA kernels into shared library
+  set(CUDA_HOST_COMPILER "/usr/bin/")
+  # CUDA 8.0 is not compatible with gcc > 5
+  set(NVCCFLAGS="--compiler-bindir ${CUDA_HOST_COMPILER}")
+  # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
+  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11" )
+  set(CUDA_PATH "/usr/local/cuda-8.0")
+  set(CUDA_INC_PATH "${CUDA_PATH}/include")
+  set(CUDA_HELPER_PATH "${CUDA_PATH}/samples/common/inc")
+  set(CUDA_LIB_PATH "${CUDA_PATH}/lib64")
+  cuda_include_directories(${CUDA_INC_PATH} ${CUDA_HELPER_PATH})
+  include_directories(${CUDA_INC_PATH} ${CUDA_HELPER_PATH})
+  cuda_add_library(bdmcuda ${KERNELS} OPTIONS -arch sm_60)
+  target_link_libraries(biodynamo bdmcuda)
+endif()
 
 # add custom clean target for shared library
 add_custom_target(libbdmclean COMMAND ${CMAKE_COMMAND} -P "${CMAKE_BINARY_DIR}/CMakeFiles/biodynamo.dir/cmake_clean.cmake")
@@ -213,6 +220,13 @@ if (test)
     add_dependencies(check soma_clustering)
     add_test(NAME "integration-soma-clustering"
              COMMAND ${CMAKE_SOURCE_DIR}/build/soma_clustering)
+    bdm_add_executable(cell_division_gpu
+                      SOURCES test/integration/cell_division_gpu.cc
+                      HEADERS test/integration/cell_division_gpu.h
+                      LIBRARIES biodynamo)
+    add_dependencies(check cell_division_gpu)
+    add_test(NAME "integration-cell-division-gpu"
+             COMMAND ${CMAKE_SOURCE_DIR}/build/cell_division_gpu)
   endif()
 endif()
 

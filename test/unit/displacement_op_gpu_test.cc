@@ -1,20 +1,18 @@
-#include "displacement_op_gpu.h"
+#include "displacement_op.h"
 #include "cell.h"
 #include "gpu/gpu_helper.h"
 #include "grid.h"
+#include "biology_module/grow_divide.h"
 #include "gtest/gtest.h"
 #include "unit/test_util.h"
 
 namespace bdm {
 namespace displacement_op_gpu_test_internal {
 
-template <typename TCompileTimeParam>
-void RunTest() {
-  auto rm = ResourceManager<TCompileTimeParam>::Get();
+void RunTest(int platform) {
+  auto rm = ResourceManager<>::Get();
+  rm->Clear();
   auto cells = rm->template Get<Cell>();
-
-  FindGpuDevices();
-  CompileKernels();
 
   // Cell 1
   Cell cell;
@@ -23,9 +21,6 @@ void RunTest() {
   cell.SetMass(1.4);
   cell.SetPosition({0, 0, 0});
   cell.SetMassLocation({0, 0, 0});
-  // cell.SetTractorForce(tractor_force);
-  InlineVector<int, 8> neighbor_1;
-  neighbor_1.push_back(1);
   cells->push_back(cell);
 
   // Cell 2
@@ -34,17 +29,19 @@ void RunTest() {
   cell.SetMass(1.1);
   cell.SetPosition({0, 5, 0});
   cell.SetMassLocation({0, 5, 0});
-  // cell.SetTractorForce(tractor_force);
-  InlineVector<int, 8> neighbor_2;
-  neighbor_2.push_back(0);
   cells->push_back(cell);
 
-  auto& grid = Grid<ResourceManager<TCompileTimeParam>>::GetInstance();
+  auto& grid = Grid<>::GetInstance();
   grid.Initialize();
 
   // execute operation
-  DisplacementOpGpu<Grid<ResourceManager<TCompileTimeParam>>> op;
-  op(cells, 0);
+  if (platform == 0) {
+    DisplacementOpCuda<> op;
+    op(cells, 0);
+  } else {
+    DisplacementOpOpenCL<> op;
+    op(cells, 0);
+  }
 
   // check results
   // cell 1
@@ -82,32 +79,27 @@ void RunTest() {
   EXPECT_NEAR(1.1, (*cells)[1].GetMass(), abs_error<double>::value);
 }
 
-template <typename TBackend = Soa>
-struct AosCompileTimeParam {
-  template <typename TTBackend>
-  using Self = AosCompileTimeParam<TTBackend>;
-  using Backend = TBackend;
-  using SimulationBackend = Scalar;
-  using BiologyModules = Variant<NullBiologyModule>;
-  using AtomicTypes = VariadicTypedef<Cell>;
-};
+#ifdef USE_CUDA
+TEST(DisplacementOpGpuTest, ComputeSoaCuda) {
+  Param::use_gpu_ = true;
+  InitializeGPUEnvironment();
+  RunTest(0);
+  std::cout << "finished" << std::endl;
+  std::cout << "finished2" << std::endl;
+}
+#endif
 
-// TEST(DisplacementOpGpuTest, ComputeAos) { RunTest<AosCompileTimeParam<>>(); }
+#ifdef USE_OPENCL
+TEST(DisplacementOpGpuTest, ComputeSoaOpenCL) {
+  Param::use_gpu_ = true;
+  Param::use_opencl_ = true;
+  InitializeGPUEnvironment();
+  RunTest(1);
+}
+#endif
 
-template <typename TBackend = Soa>
-struct SoaCompileTimeParam {
-  template <typename TTBackend>
-  using Self = SoaCompileTimeParam<TTBackend>;
-  using Backend = TBackend;
-  using SimulationBackend = Soa;
-  using BiologyModules = Variant<NullBiologyModule>;
-  using AtomicTypes = VariadicTypedef<Cell>;
-};
-
-TEST(DisplacementOpGpuTest, ComputeSoa) { RunTest<SoaCompileTimeParam<>>(); }
-
-TEST(DisplacementOpGpuTest, ComputeSoaNew) {
-  auto rm = ResourceManager<SoaCompileTimeParam<>>::Get();
+void RunTest2(int platform) {
+  auto rm = ResourceManager<>::Get();
   rm->Clear();
   auto cells = rm->template Get<Cell>();
 
@@ -124,13 +116,18 @@ TEST(DisplacementOpGpuTest, ComputeSoaNew) {
     }
   }
 
-  auto& grid = Grid<ResourceManager<SoaCompileTimeParam<>>>::GetInstance();
+  auto& grid = Grid<>::GetInstance();
   grid.ClearGrid();
   grid.Initialize();
 
   // execute operation
-  DisplacementOpGpu<Grid<ResourceManager<SoaCompileTimeParam<>>>> op;
-  op(cells, 0);
+  if (platform == 0) {
+    DisplacementOpCuda<> op;
+    op(cells, 0);
+  } else {
+    DisplacementOpOpenCL<> op;
+    op(cells, 0);
+  }
 
   // clang-format off
   EXPECT_ARR_NEAR((*cells)[0].GetPosition(), {-0.20160966809506442, -0.20160966809506442, -0.20160966809506442});
@@ -162,6 +159,14 @@ TEST(DisplacementOpGpuTest, ComputeSoaNew) {
   EXPECT_ARR_NEAR((*cells)[26].GetPosition(), {40.201609668095067, 40.201609668095067, 40.201609668095067});
   // clang-format on
 }
+
+#ifdef USE_CUDA
+TEST(DisplacementOpGpuTest, ComputeSoaNewCuda) { RunTest2(0); }
+#endif
+
+#ifdef USE_OPENCL
+TEST(DisplacementOpGpuTest, ComputeSoaNewOpenCL) { RunTest2(1); }
+#endif
 
 }  // namespace displacement_op_test_internal
 }  // namespace bdm

@@ -13,7 +13,7 @@ bool Param::run_mechanical_interactions_ = true;
 bool Param::bound_space_ = false;
 double Param::min_bound_ = 0;
 double Param::max_bound_ = 100;
-unsigned Param::simulation_steps_ = 0;
+unsigned Param::simulation_steps_ = 1;
 
 // visualization group
 bool Param::live_visualization_ = false;
@@ -29,6 +29,9 @@ bool Param::python_catalyst_pipeline_ = false;
 
 // experimental group
 bool Param::use_gpu_ = false;
+bool Param::use_opencl_ = false;
+bool Param::opencl_debug_ = false;
+int Param::preferred_gpu_ = 0;
 
 #define BDM_ASSIGN_CONFIG_VALUE(variable, config_key)                        \
   {                                                                          \
@@ -132,6 +135,9 @@ void Param::AssignFromConfig(const std::shared_ptr<cpptoml::table>& config) {
   
   // experimental group
   BDM_ASSIGN_CONFIG_VALUE(use_gpu_, "experimental.use_gpu");
+  BDM_ASSIGN_CONFIG_VALUE(use_opencl_, "experimental.use_opencl");
+  BDM_ASSIGN_CONFIG_VALUE(opencl_debug_, "experimental.opencl_debug");
+  BDM_ASSIGN_CONFIG_VALUE(preferred_gpu_, "experimental.preferred_gpu");
 }
 
 void Param::Reset() {
@@ -145,7 +151,7 @@ void Param::Reset() {
   bound_space_ = false;
   min_bound_ = 0;
   max_bound_ = 100;
-  simulation_steps_ = 0;
+  simulation_steps_ = 1;
 
   // visualization group
   live_visualization_ = false;
@@ -160,6 +166,9 @@ void Param::Reset() {
 
   // experimental group
   use_gpu_ = false;
+  use_opencl_ = false;
+  opencl_debug_ = false;
+  preferred_gpu_ = 0;
 }
 
 }  // namespace bdm

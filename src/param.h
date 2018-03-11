@@ -93,7 +93,7 @@ struct Param {
   static double max_bound_;
 
   /// The number of time steps to run the simulation for.\n
-  /// Default value: `0`\n
+  /// Default value: `1`\n
   /// TOML config file:
   ///
   ///     [simulation]
@@ -205,6 +205,29 @@ struct Param {
   ///     [experimental]
   ///     use_gpu = false 
   static bool use_gpu_;
+
+  /// When both CUDA and OpenCL are available on a machine, the preference to
+  /// OpenCL can be set with this flag, as per default CUDA is used.
+  /// Default value: `false`\n
+  /// TOML config file:
+  ///     [experimental]
+  ///     use_opencl = false 
+  static bool use_opencl_;
+
+  /// Compile OpenCL kernels with debugging symbols, for debugging on CPU
+  /// targets with GNU gdb.
+  /// Default value: `false`\n
+  /// TOML config file:
+  ///     [experimental]
+  ///     opencl_debug_ = false 
+  static bool opencl_debug_;
+
+  /// Set the index of the preferred GPU you wish to use.
+  /// Default value: `0`\n
+  /// TOML config file:
+  ///     [experimental]
+  ///     preferred_gpu = 0 
+  static int preferred_gpu_;
 
   /// Resets the static variables to its default values
   static void Reset();

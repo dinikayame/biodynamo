@@ -1,5 +1,5 @@
 #include "helper_math.h"
-#include "displacement_op_cuda.h"
+#include "gpu/displacement_op_cuda_kernel.h"
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
@@ -7,6 +7,9 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
    if (code != cudaSuccess) 
    {
       fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (code == cudaErrorInsufficientDriver) {
+        printf("This probably means that no CUDA-compatible GPU has been detected. Consider setting the use_opencl flag to \"true\" in the bmd.toml file to use OpenCL instead.\n");
+      }
       if (abort) exit(code);
    }
 }
@@ -70,7 +73,6 @@ __device__ void compute_force(double* positions, double* diameters, uint32_t idx
 
   // to avoid a division by 0 if the centers are (almost) at the same location
   if (center_distance < 0.00000001) {
-    printf("RANDOM FORCE!\n");
     result->x += 42.0;
     result->y += 42.0;
     result->z += 42.0;
@@ -173,9 +175,8 @@ __global__ void collide(
   }
 }
 
-CudaDisplacementOp::CudaDisplacementOp(uint32_t N, uint32_t num_boxes) {
-  printf("N = %u  |  num_boxes = %u\n", N, num_boxes);
-
+bdm::DisplacementOpCudaKernel::DisplacementOpCudaKernel(uint32_t N, uint32_t num_boxes) {
+  // printf("N = %u  |  num_boxes = %u\n", N, num_boxes);
   gpuErrchk(cudaMalloc(&d_positions, 3 * N * sizeof(double)));
   gpuErrchk(cudaMalloc(&d_diameters, N * sizeof(double)));
   gpuErrchk(cudaMalloc(&d_tractor_force, 3 * N * sizeof(double)));
@@ -195,7 +196,7 @@ CudaDisplacementOp::CudaDisplacementOp(uint32_t N, uint32_t num_boxes) {
   gpuErrchk(cudaMalloc(&d_cell_movements, 3 * N * sizeof(double)));
 }
 
-void CudaDisplacementOp::displacement_op_cuda(double* positions, double* diameters, double* tractor_force, double* adherence, uint32_t* box_id, double* mass, double* timestep, double* max_displacement, double* squared_radius, uint32_t* N, uint32_t* starts, uint16_t* lengths, uint32_t* successors, uint32_t* box_length, uint32_t* num_boxes_axis, int32_t* grid_dimensions, double* cell_movements) {
+void bdm::DisplacementOpCudaKernel::displacement_op_cuda(double* positions, double* diameters, double* tractor_force, double* adherence, uint32_t* box_id, double* mass, double* timestep, double* max_displacement, double* squared_radius, uint32_t* N, uint32_t* starts, uint16_t* lengths, uint32_t* successors, uint32_t* box_length, uint32_t* num_boxes_axis, int32_t* grid_dimensions, double* cell_movements) {
   uint32_t num_boxes = num_boxes_axis[0] * num_boxes_axis[1] * num_boxes_axis[2];
 
   gpuErrchk(cudaMemcpy(d_positions, 		positions, 3 * N[0] * sizeof(double), cudaMemcpyHostToDevice));
@@ -231,7 +232,7 @@ void CudaDisplacementOp::displacement_op_cuda(double* positions, double* diamete
   cudaMemcpy(cell_movements, d_cell_movements, 3 * N[0] * sizeof(double), cudaMemcpyDeviceToHost);
 }
 
-void CudaDisplacementOp::resize_cell_buffers(uint32_t N) {
+void bdm::DisplacementOpCudaKernel::resize_cell_buffers(uint32_t N) {
   cudaFree(d_positions);
   cudaFree(d_diameters);
   cudaFree(d_tractor_force);
@@ -251,7 +252,7 @@ void CudaDisplacementOp::resize_cell_buffers(uint32_t N) {
   cudaMalloc(&d_cell_movements, 3 * N * sizeof(double));
 }
 
-void CudaDisplacementOp::resize_grid_buffers(uint32_t num_boxes) {
+void bdm::DisplacementOpCudaKernel::resize_grid_buffers(uint32_t num_boxes) {
   cudaFree(d_starts);
   cudaFree(d_lengths);
 
@@ -259,7 +260,7 @@ void CudaDisplacementOp::resize_grid_buffers(uint32_t num_boxes) {
   cudaMalloc(&d_lengths, num_boxes * sizeof(uint16_t));
 }
 
-CudaDisplacementOp::~CudaDisplacementOp() {
+bdm::DisplacementOpCudaKernel::~DisplacementOpCudaKernel() {
   cudaFree(d_positions);
   cudaFree(d_diameters);
   cudaFree(d_tractor_force);
