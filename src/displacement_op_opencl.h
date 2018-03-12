@@ -3,7 +3,11 @@
 
 #ifdef USE_OPENCL
 #define __CL_ENABLE_EXCEPTIONS
+#ifdef __APPLE__
+#include <OpenCL/cl.hpp>
+#else
 #include <CL/cl.hpp>
+#endif
 #endif
 
 #include "gpu/gpu_helper.h"

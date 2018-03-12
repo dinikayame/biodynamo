@@ -92,10 +92,12 @@ inline int Simulate(int argc, const char** argv) {
 
   // Run GPU (CUDA) version
   Param::use_gpu_ = true;
+  InitializeGPUEnvironment<>();
   RunTest(&result);
 
   // Run GPU (OpenCL) version
   Param::use_opencl_ = true;
+  InitializeGPUEnvironment<>();
   RunTest(&result);
 
   return !result;

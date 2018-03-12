@@ -95,9 +95,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 if(APPLE)
   set(CMAKE_INSTALL_RPATH
-	"/usr/local/lib/paraview-5.4"
-	"/usr/local/opt/qt5/lib"
-	"/usr/local/lib/biodynamo")
+  "/usr/local/lib/paraview-5.4"
+  "/usr/local/opt/qt5/lib"
+  "/usr/local/lib/biodynamo")
 endif()
 
 # -------------------- setup mpark variant library -----------------------------
@@ -133,9 +133,13 @@ endif()
 
 # Link to OpenCL
 if (OpenCL_FOUND)
+  if (APPLE)
+    # Apple does not ship OpenCL C++ bindings by default
+    include_directories("${CMAKE_SOURCE_DIR}/third_party")
+  endif()
   add_definitions("-DUSE_OPENCL")
   link_directories("${CMAKE_SOURCE_DIR}/build")
-  target_link_libraries(biodynamo OpenCL)
+  target_link_libraries(biodynamo ${OpenCL_LIBRARIES})
 endif()
 
 if (CUDA_FOUND)

@@ -6,8 +6,13 @@
 
 #ifdef USE_OPENCL
 #define __CL_ENABLE_EXCEPTIONS
+#ifdef __APPLE__
+#include <OpenCL/cl.hpp>
+#else
 #include <CL/cl.hpp>
 #endif
+#endif
+
 #ifdef USE_CUDA
 #include "cuda_runtime_api.h"
 #endif
@@ -19,7 +24,7 @@
 namespace bdm {
 
 #ifdef USE_OPENCL
-static cl_int cl_assert(cl_int const code, char const * const file, int const line, bool const abort);
+static inline cl_int cl_assert(cl_int const code, char const * const file, int const line, bool const abort);
 static const char *getErrorString(cl_int error);
 #define cl_ok(err) cl_assert(err, __FILE__, __LINE__, true);
 #endif
@@ -52,6 +57,42 @@ static void FindGpuDevicesCuda() {
 #endif
 
 #ifdef USE_OPENCL
+template <typename TResourceManager = ResourceManager<>>
+static void CompileOpenCLKernels() {
+  auto rm = TResourceManager::Get();
+  std::vector<cl::Program>* all_programs = rm->GetOpenCLProgramList();
+  cl::Context* context = rm->GetOpenCLContext();
+  std::vector<cl::Device>* devices = rm->GetOpenCLDeviceList();
+  // Compile OpenCL program for found device
+  // TODO(ahmad): create more convenient way to compile all OpenCL kernels, by
+  // going through a list of header files. Also, create a stringifier that goes
+  // from .cl --> .h, since OpenCL kernels must be input as a string here
+  cl::Program displacement_op_program(
+      *context,
+      cl::Program::Sources(1, std::make_pair(displacement_op_opencl_kernel, strlen(displacement_op_opencl_kernel))));
+
+  all_programs->push_back(displacement_op_program);
+
+  // TODO(ahmad): replace all cout with ROOT logging functions
+  std::cout << "Compiling OpenCL kernels..." << std::endl;
+
+  std::string options;
+  if (Param::opencl_debug_) {
+    std::cout << "Building OpenCL kernels with debugging ON" << std::endl;
+    options = "-g -O0";
+  }
+
+  for (auto& prog : *all_programs) {
+    try {
+        prog.build(*devices, options.c_str());
+    } catch (const cl::Error &) {
+      std::cerr << "OpenCL compilation error" << std::endl
+                << prog.getBuildInfo<CL_PROGRAM_BUILD_LOG>((*devices)[0])
+                << std::endl;
+    }
+  }
+}
+
 template <typename TResourceManager = ResourceManager<>>
 static void FindGpuDevicesOpenCL() {
   try {
@@ -118,45 +159,11 @@ static void FindGpuDevicesOpenCL() {
     *queue = cl::CommandQueue(*context, (*devices)[Param::preferred_gpu_], CL_QUEUE_PROFILING_ENABLE, &queue_err);
     cl_ok(queue_err);
 
+    // Compile the OpenCL kernels
+    CompileOpenCLKernels<>();
   } catch (const cl::Error &err) {
     std::cerr << "OpenCL error: " << err.what() << "(" << err.err() << ")"
               << std::endl;
-  }
-}
-
-template <typename TResourceManager = ResourceManager<>>
-static void CompileOpenCLKernels() {
-  auto rm = TResourceManager::Get();
-  std::vector<cl::Program>* all_programs = rm->GetOpenCLProgramList();
-  cl::Context* context = rm->GetOpenCLContext();
-  std::vector<cl::Device>* devices = rm->GetOpenCLDeviceList();
-  // Compile OpenCL program for found device
-  // TODO(ahmad): create more convenient way to compile all OpenCL kernels, by
-  // going through a list of header files. Also, create a stringifier that goes
-  // from .cl --> .h, since OpenCL kernels must be input as a string here
-  cl::Program displacement_op_program(
-      *context,
-      cl::Program::Sources(1, std::make_pair(displacement_op_opencl_kernel, strlen(displacement_op_opencl_kernel))));
-
-  all_programs->push_back(displacement_op_program);
-
-  // TODO(ahmad): replace all cout with ROOT logging functions
-  std::cout << "Compiling OpenCL kernels..." << std::endl;
-
-  std::string options;
-  if (Param::opencl_debug_) {
-    std::cout << "Building OpenCL kernels with debugging ON" << std::endl;
-    options = "-g -O0";
-  }
-
-  for (auto& prog : *all_programs) {
-    try {
-        prog.build(*devices, options.c_str());
-    } catch (const cl::Error &) {
-      std::cerr << "OpenCL compilation error" << std::endl
-                << prog.getBuildInfo<CL_PROGRAM_BUILD_LOG>((*devices)[0])
-                << std::endl;
-    }
   }
 }
 #endif
@@ -166,7 +173,6 @@ static void InitializeGPUEnvironment() {
   if (Param::use_opencl_) {
 #ifdef USE_OPENCL
     FindGpuDevicesOpenCL<>();
-    CompileOpenCLKernels<>();
 #else
     std::cout << "You tried to use the GPU (OpenCL) version of BioDynaMo, but no OpenCL installation was detected on this machine.\nSwitching to the CPU version..." << std::endl;
     Param::use_gpu_ = false;
