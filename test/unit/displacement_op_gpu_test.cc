@@ -9,7 +9,7 @@
 namespace bdm {
 namespace displacement_op_gpu_test_internal {
 
-void RunTest(int platform) {
+void RunTest() {
   auto rm = ResourceManager<>::Get();
   rm->Clear();
   auto cells = rm->template Get<Cell>();
@@ -35,13 +35,8 @@ void RunTest(int platform) {
   grid.Initialize();
 
   // execute operation
-  if (platform == 0) {
-    DisplacementOpCuda<> op;
-    op(cells, 0);
-  } else {
-    DisplacementOpOpenCL<> op;
-    op(cells, 0);
-  }
+  DisplacementOp<> op;
+  op(cells, 0);
 
   // check results
   // cell 1
@@ -83,9 +78,7 @@ void RunTest(int platform) {
 TEST(DisplacementOpGpuTest, ComputeSoaCuda) {
   Param::use_gpu_ = true;
   InitializeGPUEnvironment();
-  RunTest(0);
-  std::cout << "finished" << std::endl;
-  std::cout << "finished2" << std::endl;
+  RunTest();
 }
 #endif
 
@@ -94,11 +87,11 @@ TEST(DisplacementOpGpuTest, ComputeSoaOpenCL) {
   Param::use_gpu_ = true;
   Param::use_opencl_ = true;
   InitializeGPUEnvironment();
-  RunTest(1);
+  RunTest();
 }
 #endif
 
-void RunTest2(int platform) {
+void RunTest2() {
   auto rm = ResourceManager<>::Get();
   rm->Clear();
   auto cells = rm->template Get<Cell>();
@@ -121,13 +114,8 @@ void RunTest2(int platform) {
   grid.Initialize();
 
   // execute operation
-  if (platform == 0) {
-    DisplacementOpCuda<> op;
-    op(cells, 0);
-  } else {
-    DisplacementOpOpenCL<> op;
-    op(cells, 0);
-  }
+  DisplacementOp<> op;
+  op(cells, 0);
 
   // clang-format off
   EXPECT_ARR_NEAR((*cells)[0].GetPosition(), {-0.20160966809506442, -0.20160966809506442, -0.20160966809506442});
@@ -161,11 +149,19 @@ void RunTest2(int platform) {
 }
 
 #ifdef USE_CUDA
-TEST(DisplacementOpGpuTest, ComputeSoaNewCuda) { RunTest2(0); }
+TEST(DisplacementOpGpuTest, ComputeSoaNewCuda) {
+  Param::use_opencl_ = false;
+  InitializeGPUEnvironment();
+  RunTest2();
+}
 #endif
 
 #ifdef USE_OPENCL
-TEST(DisplacementOpGpuTest, ComputeSoaNewOpenCL) { RunTest2(1); }
+TEST(DisplacementOpGpuTest, ComputeSoaNewOpenCL) {
+  Param::use_opencl_ = true;
+  InitializeGPUEnvironment();
+  RunTest2();
+}
 #endif
 
 }  // namespace displacement_op_test_internal

@@ -1,7 +1,7 @@
 # setup google test
 ExternalProject_Add(
   gtest
-  URL "${CMAKE_SOURCE_DIR}/third_party/gtest-1.8.0.zip"
+  URL "${CMAKE_SOURCE_DIR}/third_party/gtest-1.7.0.zip"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/gtest"
   CMAKE_CACHE_ARGS
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
@@ -65,7 +65,7 @@ function(bdm_add_test_executable TEST_TARGET)
   endif()
   # add valgrind test
   if (valgrind AND NOT coverage)
-    add_test(NAME "valgrind_${TEST_TARGET}" COMMAND valgrind --leak-resolution=high --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=no --suppressions=${CMAKE_BINARY_DIR}/../valgrind-biod.supp --error-exitcode=1 ./${TEST_TARGET} --gtest_filter=-*DeathTest.*:IOTest.InvalidRead)
+    add_test(NAME "valgrind_${TEST_TARGET}" COMMAND valgrind --leak-resolution=high --tool=memcheck --leak-check=full --show-leak-kinds=all --gen-suppressions=all --show-reachable=no --suppressions=${CMAKE_BINARY_DIR}/../valgrind-biod.supp --error-exitcode=1 ./${TEST_TARGET} --gtest_filter=-*DeathTest.*:IOTest.InvalidRead)
     if (APPLE)
       set_tests_properties(valgrind PROPERTIES ENVIRONMENT
         "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}"

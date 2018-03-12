@@ -65,36 +65,10 @@ inline void RunTest(bool* result) {
     }
   }
 
-  // auto& grid = Grid<>::GetInstance();
-  // grid.Initialize();
-
-  Scheduler<> scheduler;
-  scheduler.Simulate(10);
-
   // Run for 10 timesteps. In step 2 a division should take place. In step 3
   // these new cells are instantiated
-
-  // static const auto commit = [](auto* sim_objects, uint16_t type_idx) {
-  //   sim_objects->Commit();
-  // };
-
-  // BiologyModuleOp bop;
-  // DisplacementOp<> dop;
-  // for (int time = 0; time < 10; time++) {
-  //   grid.UpdateGrid();
-  //   bop(cells, 0);
-  //   dop(cells, 0);
-  //   commit(cells, 0);
-  // }
-
-  // Print((*cells)[0].GetPosition(), 20);
-  // Print((*cells)[1].GetPosition(), 20);
-  // Print((*cells)[2].GetPosition(), 20);
-  // Print((*cells)[3].GetPosition(), 20);
-  // Print((*cells)[4].GetPosition(), 20);
-  // Print((*cells)[5].GetPosition(), 20);
-  // Print((*cells)[6].GetPosition(), 20);
-  // Print((*cells)[7].GetPosition(), 20);
+  Scheduler<> scheduler;
+  scheduler.Simulate(10);
 
   EXPECT_ARR_NEAR((*cells)[0].GetPosition(), {4.1399071506916413909, -5.9871942139195297727, 2.8344890446256703065}, result);
   EXPECT_ARR_NEAR((*cells)[1].GetPosition(), {-2.4263219149482031511, -1.4202336557809887019, 29.769029317615839147}, result);
@@ -109,6 +83,8 @@ inline void RunTest(bool* result) {
 inline int Simulate(int argc, const char** argv) {
   bool result = true;
 
+  // TODO(ahmad): after Trello card ("Fix inconsistency in cell state due to direct updates in Biology Modules")
+  // enable multithreading, and adjust results if necessary
   omp_set_num_threads(1);
 
   // Run CPU version

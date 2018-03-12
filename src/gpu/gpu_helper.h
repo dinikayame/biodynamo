@@ -4,18 +4,29 @@
 #include <vector>
 #include <iostream>
 
+#ifdef USE_OPENCL
+#define __CL_ENABLE_EXCEPTIONS
+#include <CL/cl.hpp>
+#endif
+#ifdef USE_CUDA
 #include "cuda_runtime_api.h"
+#endif
+
 #include "gpu/opencl_kernels.h"
+#include "param.h"
 #include "resource_manager.h"
 
 namespace bdm {
 
+#ifdef USE_OPENCL
 static cl_int cl_assert(cl_int const code, char const * const file, int const line, bool const abort);
 static const char *getErrorString(cl_int error);
 #define cl_ok(err) cl_assert(err, __FILE__, __LINE__, true);
+#endif
 
+#ifdef USE_CUDA
 static void FindGpuDevicesCuda() {
-  int nDevices;
+  int nDevices = 0;
 
   cudaGetDeviceCount(&nDevices);
   if (nDevices == 0) {
@@ -38,7 +49,9 @@ static void FindGpuDevicesCuda() {
   cudaGetDeviceProperties(&prop, Param::preferred_gpu_);
   std::cout << std::endl << "Selected GPU [" << Param::preferred_gpu_ << "]: " << prop.name << std::endl << std::endl;
 }
+#endif
 
+#ifdef USE_OPENCL
 template <typename TResourceManager = ResourceManager<>>
 static void FindGpuDevicesOpenCL() {
   try {
@@ -146,6 +159,7 @@ static void CompileOpenCLKernels() {
     }
   }
 }
+#endif
 
 template <typename TResourceManager = ResourceManager<>>
 static void InitializeGPUEnvironment() {
@@ -167,6 +181,7 @@ static void InitializeGPUEnvironment() {
   }
 }
 
+#ifdef USE_OPENCL
 const char *getErrorString(cl_int error) {
   switch(error){
     // run-time and JIT compiler errors
@@ -261,6 +276,7 @@ cl_int cl_assert(cl_int const code, char const * const file, int const line, boo
 
   return code;
 }
+#endif
 
 }  // namespace bdm
 

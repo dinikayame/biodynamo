@@ -224,9 +224,11 @@ if (test)
                       SOURCES test/integration/cell_division_gpu.cc
                       HEADERS test/integration/cell_division_gpu.h
                       LIBRARIES biodynamo)
-    add_dependencies(check cell_division_gpu)
-    add_test(NAME "integration-cell-division-gpu"
-             COMMAND ${CMAKE_SOURCE_DIR}/build/cell_division_gpu)
+    if(OpenCL_FOUND OR CUDA_FOUND)
+      add_dependencies(check cell_division_gpu)
+      add_test(NAME "integration-cell-division-gpu"
+               COMMAND ${CMAKE_SOURCE_DIR}/build/cell_division_gpu)
+    endif()
   endif()
 endif()
 

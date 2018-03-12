@@ -1,11 +1,14 @@
 #ifndef DISPLACEMENT_OP_OPENCL_H_
 #define DISPLACEMENT_OP_OPENCL_H_
 
+#ifdef USE_OPENCL
+#define __CL_ENABLE_EXCEPTIONS
+#include <CL/cl.hpp>
+#endif
+
 #include "gpu/gpu_helper.h"
 #include "grid.h"
 #include "resource_manager.h"
-
-#include <fstream>
 
 namespace bdm {
 
@@ -20,6 +23,7 @@ class DisplacementOpOpenCL {
 
   template <typename TContainer>
   void operator()(TContainer* cells, uint16_t type_idx) const {
+#ifdef USE_OPENCL
     auto& grid = TGrid::GetInstance();
     auto rm = TResourceManager::Get();
     auto context = rm->GetOpenCLContext();
@@ -120,13 +124,6 @@ class DisplacementOpOpenCL {
       throw;
     }
 
-    // remove("gpu.txt");
-    // std::ofstream ofs("gpu.txt", std::ofstream::out);
-    // for (size_t k = 0; k < cell_movements.size(); k++) {
-    //   ofs << cell_movements[k][0] << ", " << cell_movements[k][1] << ", " << cell_movements[k][2] << std::endl;
-    // }
-    // ofs.close();
-
 // set new positions after all updates have been calculated
 // otherwise some cells would see neighbors with already updated positions
 // which would lead to inconsistencies
@@ -142,6 +139,7 @@ class DisplacementOpOpenCL {
       // Reset biological movement to 0.
       cell.SetTractorForce({0, 0, 0});
     }
+#endif
   }
 };
 

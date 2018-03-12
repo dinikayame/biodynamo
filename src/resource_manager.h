@@ -258,11 +258,12 @@ class ResourceManager {
     Get<TSo>()->push_back(so);
   }
 
+#ifdef USE_OPENCL
   cl::Context* GetOpenCLContext() { return &opencl_context_; }
   cl::CommandQueue* GetOpenCLCommandQueue() { return &opencl_command_queue_; }
   std::vector<cl::Device>* GetOpenCLDeviceList() { return &opencl_devices_; }
   std::vector<cl::Program>* GetOpenCLProgramList() { return &opencl_programs_; }
-
+#endif
 
   /// Returns the number of simulation object types
   static constexpr size_t NumberOfTypes() {
@@ -277,11 +278,13 @@ class ResourceManager {
   typename ConvertToContainerTuple<Backend, Types>::type data_;
   std::vector<DiffusionGrid*> diffusion_grids_;
 
+#ifdef USE_OPENCL
   cl::Context opencl_context_; //!
   cl::CommandQueue opencl_command_queue_; //!
   // Currently only support for one GPU device
   std::vector<cl::Device> opencl_devices_; //!
   std::vector<cl::Program> opencl_programs_; //!
+#endif
 
   friend class SimulationBackup;
   ClassDefNV(ResourceManager, 1);
