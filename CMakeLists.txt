@@ -224,3 +224,9 @@ bdm_add_executable(diffusion_module
                    SOURCES demo/diffusion_module.cc
                    HEADERS demo/diffusion_module.h
                    LIBRARIES biodynamo)
+
+# -------------------- build your own executable ------------------
+bdm_add_executable(retina_proj2
+                   SOURCES retina_proj2/src/retina_proj2.cc
+                   HEADERS retina_proj2/src/retina_proj2.h
+                   LIBRARIES biodynamo)
