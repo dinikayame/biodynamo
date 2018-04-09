@@ -122,7 +122,7 @@ amacrine moves but not as expected...
         /*
           260318: TODO add stopping criteria for cells to stop migrating
         */
-        if(concentration < 0.000000002){
+        if(concentration < 0.00000014){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -162,7 +162,7 @@ amacrine moves but not as expected...
           /*
             260318: TODO add stopping criteria for cells to stop migrating
           */
-          if(concentration < 0.00000005){
+          if(concentration < 0.00000011){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -237,7 +237,7 @@ amacrine moves but not as expected...
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000011) {
+        if (concentration < 0.00000005) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -273,7 +273,8 @@ amacrine moves but not as expected...
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000014) {
+        //cones do not migrate far off from basal
+        if (concentration < 0.000000002) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -309,7 +310,8 @@ amacrine moves but not as expected...
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000014) {
+        //rods do not migrate far off from basal
+        if (concentration < 0.000000002) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -338,7 +340,8 @@ inline int Simulate(int argc, const char** argv) {
 
   Param::bound_space_ = true;
   Param::min_bound_ = 0;
-  Param::max_bound_ = 520;
+  //max bound is 250um
+  Param::max_bound_ = 250;
   Param::run_mechanical_interactions_ = true;
 
     int randSeed = rand() % 1000;
@@ -354,9 +357,11 @@ inline int Simulate(int argc, const char** argv) {
 
   auto construct_ganglion = [](const std::array<double, 3>& position) {
         MyCell cell(position);
-        cell.SetDiameter(20);
+        //estimate gangliong cell diameter to be 11um
+        cell.SetDiameter(11);
         cell.AddBiologyModule(ganglionCell());
-        cell.SetCellType(6);
+        //cell.SetCellType(6);
+        cell.SetCellType(3);
         return cell;
       };
       //CellCreator(Param::min_bound_, Param::max_bound_, 50, construct_bistratified);
@@ -372,9 +377,12 @@ inline int Simulate(int argc, const char** argv) {
     */
     auto construct_amacrine = [](const std::array<double, 3>& position){
         MyCell cell(position);
-        cell.SetDiameter(15);
+        //assume average dendritic field to be small/medium field as we are looking
+        //at central ret so around 100um
+        cell.SetDiameter(100);
         cell.AddBiologyModule(amacrineCell());
-        cell.SetCellType(5);
+        //cell.SetCellType(5);
+        cell.SetCellType(6);
         return cell;
       };
     cout << "Amacrine cells created" << endl;
@@ -388,8 +396,10 @@ inline int Simulate(int argc, const char** argv) {
     */
       auto construct_bipolar = [](const std::array<double, 3>& position){
         MyCell cell(position);
+        //assume avg diamter using midget cone bipolar fmB and imB of 12um in 4.5mm region
         cell.SetDiameter(12);
         cell.AddBiologyModule(bipolarCell());
+        //cell.SetCellType(4);
         cell.SetCellType(4);
         return cell;
       };
@@ -403,13 +413,15 @@ inline int Simulate(int argc, const char** argv) {
       */
       auto construct_horizontal = [](const std::array<double, 3>& position){
           MyCell cell(position);
-          cell.SetDiameter(10);
+          //assume avg diamter using H1 of 25um dentritic field in 2.5mm region
+          cell.SetDiameter(25);
           cell.AddBiologyModule(horizontalCell());
-          cell.SetCellType(3);
+          //cell.SetCellType(3);
+          cell.SetCellType(5);
           return cell;
       };
       cout << "Horizontal cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_horizontal);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_horizontal);
 
     /*cones
     part 2:
@@ -418,7 +430,8 @@ inline int Simulate(int argc, const char** argv) {
     */
       auto construct_cone = [](const std::array<double, 3>& position){
         MyCell cell(position);
-        cell.SetDiameter(6);
+        //approximately 2um in foveal area
+        cell.SetDiameter(2);
         cell.AddBiologyModule(coneCell());
         cell.SetCellType(2);
         return cell;
@@ -433,7 +446,8 @@ inline int Simulate(int argc, const char** argv) {
     */
       auto construct_rod = [](const std::array<double, 3>& position){
         MyCell cell(position);
-        cell.SetDiameter(5);
+        //approximately 2umn in diameter
+        cell.SetDiameter(2);
         cell.AddBiologyModule(rodCell());
         cell.SetCellType(1);
         return cell;
