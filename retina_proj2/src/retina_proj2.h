@@ -18,7 +18,7 @@ namespace bdm {
   correlate diameter of each cell type to what is in the program
   thickness can be tested from paraview using the axis thickness
   or set the lowest bound cell and highest bound cell and take difference
-  for the thickness 
+  for the thickness
   */
 
 /* extend into cell class to define the cell types
@@ -114,12 +114,16 @@ amacrine moves but not as expected...
         auto& position = cell->GetPosition();
         dg_->GetGradient(position, &gradient_);
         double concentration = dg_->GetConcentration(position);
+        //use movement to make the cells move slower
+        movement[0] = gradient_[0]*0.5;
+        movement[1] = gradient_[1]*0.5;
+        movement[2] = gradient_[2]*0.5;
 
         /*
           260318: TODO add stopping criteria for cells to stop migrating
         */
         if(concentration < 0.000000002){
-          cell->UpdatePosition(gradient_);
+          cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
       }
@@ -127,6 +131,7 @@ amacrine moves but not as expected...
         bool init_ = false;
         DiffusionGrid* dg_ = nullptr;
         std::array<double, 3> gradient_;
+        std::array<double, 3> movement;
     };
 
     /*
@@ -150,11 +155,15 @@ amacrine moves but not as expected...
         auto& position = cell->GetPosition();
         dg_->GetGradient(position, &gradient_);
         double concentration = dg_->GetConcentration(position);
+        //use movement to make the cells move slower
+        movement[0] = gradient_[0]*0.5;
+        movement[1] = gradient_[1]*0.5;
+        movement[2] = gradient_[2]*0.5;
           /*
             260318: TODO add stopping criteria for cells to stop migrating
           */
-          if(concentration < 0.00000003){
-          cell->UpdatePosition(gradient_);
+          if(concentration < 0.00000005){
+          cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
       }
@@ -162,6 +171,7 @@ amacrine moves but not as expected...
       bool init_ = false;
       DiffusionGrid* dg_ = nullptr;
       std::array<double, 3> gradient_;
+      std::array<double, 3> movement;
     };
 
     /*
@@ -186,9 +196,13 @@ amacrine moves but not as expected...
         auto& position = cell->GetPosition();
         dg_->GetGradient(position, &gradient_);
         double concentration = dg_->GetConcentration(position);
+        //use movement to make the cells move slower
+        movement[0] = gradient_[0]*0.5;
+        movement[1] = gradient_[1]*0.5;
+        movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.000000045) {
-          cell->UpdatePosition(gradient_);
+        if (concentration < 0.00000009) {
+          cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
       }
@@ -196,6 +210,7 @@ amacrine moves but not as expected...
       bool init_ = false;
       DiffusionGrid* dg_ = nullptr;
       std::array<double, 3> gradient_;
+      std::array<double, 3> movement;
     };
 
     /*horizontal cells
@@ -217,9 +232,13 @@ amacrine moves but not as expected...
         auto& position = cell->GetPosition();
         dg_->GetGradient(position, &gradient_);
         double concentration = dg_->GetConcentration(position);
+        //use movement to make the cells move slower
+        movement[0] = gradient_[0]*0.5;
+        movement[1] = gradient_[1]*0.5;
+        movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000006) {
-          cell->UpdatePosition(gradient_);
+        if (concentration < 0.00000011) {
+          cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
       }
@@ -227,6 +246,7 @@ amacrine moves but not as expected...
       bool init_ = false;
       DiffusionGrid* dg_ = nullptr;
       std::array<double, 3> gradient_;
+      std::array<double, 3> movement;
     };
 
     /*cones
@@ -248,9 +268,13 @@ amacrine moves but not as expected...
         auto& position = cell->GetPosition();
         dg_->GetGradient(position, &gradient_);
         double concentration = dg_->GetConcentration(position);
+        //use movement to make the cells move slower
+        movement[0] = gradient_[0]*0.5;
+        movement[1] = gradient_[1]*0.5;
+        movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.000000078) {
-          cell->UpdatePosition(gradient_);
+        if (concentration < 0.00000014) {
+          cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
       }
@@ -258,6 +282,7 @@ amacrine moves but not as expected...
       bool init_ = false;
       DiffusionGrid* dg_ = nullptr;
       std::array<double, 3> gradient_;
+      std::array<double, 3> movement;
     };
 
     /*rods
@@ -279,9 +304,13 @@ amacrine moves but not as expected...
         auto& position = cell->GetPosition();
         dg_->GetGradient(position, &gradient_);
         double concentration = dg_->GetConcentration(position);
+        //use movement to make the cells move slower
+        movement[0] = gradient_[0]*0.5;
+        movement[1] = gradient_[1]*0.5;
+        movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.000000078) {
-          cell->UpdatePosition(gradient_);
+        if (concentration < 0.00000014) {
+          cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
       }
@@ -289,6 +318,7 @@ amacrine moves but not as expected...
       bool init_ = false;
       DiffusionGrid* dg_ = nullptr;
       std::array<double, 3> gradient_;
+      std::array<double, 3> movement;
     };
 
 // Define compile time parameter
@@ -331,7 +361,7 @@ inline int Simulate(int argc, const char** argv) {
       };
       //CellCreator(Param::min_bound_, Param::max_bound_, 50, construct_bistratified);
     cout << "Ganglion cells created" << endl;
-    MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_ganglion);
+    MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_ganglion);
 
     /*amacrine cells
     part 2: This is in the inner limiting layer where it links to the
@@ -348,7 +378,7 @@ inline int Simulate(int argc, const char** argv) {
         return cell;
       };
     cout << "Amacrine cells created" << endl;
-    MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_amacrine);
+    MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_amacrine);
 
     /*bipolar cells
     part 2: exists between photoreceptors and ganglion cells
@@ -364,7 +394,7 @@ inline int Simulate(int argc, const char** argv) {
         return cell;
       };
       cout << "Bipolar cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_bipolar);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_bipolar);
 
       /*horizontal cells
       part 2:
@@ -379,7 +409,7 @@ inline int Simulate(int argc, const char** argv) {
           return cell;
       };
       cout << "Horizontal cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_horizontal);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_horizontal);
 
     /*cones
     part 2:
@@ -394,7 +424,7 @@ inline int Simulate(int argc, const char** argv) {
         return cell;
       };
       cout << "Cone cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 100, construct_cone);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_cone);
 
     /*rods
       part 2:
@@ -409,7 +439,7 @@ inline int Simulate(int argc, const char** argv) {
         return cell;
       };
       cout << "Rod cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 100, construct_rod);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_rod);
 
     //defining substances in simulation
     //diffusion coefficient of 0.5, a decay constant 0f 0.1 and a resolution of 1
