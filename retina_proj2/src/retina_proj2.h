@@ -122,7 +122,7 @@ amacrine moves but not as expected...
         /*
           260318: TODO add stopping criteria for cells to stop migrating
         */
-        if(concentration < 0.00000014){
+        if(concentration < 0.00000072){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -162,7 +162,7 @@ amacrine moves but not as expected...
           /*
             260318: TODO add stopping criteria for cells to stop migrating
           */
-          if(concentration < 0.00000011){
+          if(concentration < 0.00000067){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -201,7 +201,7 @@ amacrine moves but not as expected...
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000009) {
+        if (concentration < 0.00000055) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -237,7 +237,7 @@ amacrine moves but not as expected...
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000005) {
+        if (concentration < 0.000000095) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -437,7 +437,7 @@ inline int Simulate(int argc, const char** argv) {
         return cell;
       };
       cout << "Cone cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_cone);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 250, construct_cone);
 
     /*rods
       part 2:
@@ -453,7 +453,7 @@ inline int Simulate(int argc, const char** argv) {
         return cell;
       };
       cout << "Rod cells created" << endl;
-      MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_rod);
+      MyCellCreator(Param::min_bound_, Param::max_bound_, 250, construct_rod);
 
     //defining substances in simulation
     //diffusion coefficient of 0.5, a decay constant 0f 0.1 and a resolution of 1
@@ -477,7 +477,7 @@ inline int Simulate(int argc, const char** argv) {
 
   // Run simulation for one timestep
   Scheduler<> scheduler;
-  int maxStep = 1000;
+  int maxStep = 2000;
   for (int i = 0; i < maxStep; i++){
     scheduler.Simulate(1);
   }
