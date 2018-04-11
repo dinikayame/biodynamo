@@ -8,20 +8,8 @@
 #include "substance_initializers.h"
 
 namespace bdm {
-  /*
-  part 2:
-  TODO add substance to this model
-  use substance as a way to control the way the cells migrate
 
-  part 3:
-  TODO test against real data for ret thickness
-  correlate diameter of each cell type to what is in the program
-  thickness can be tested from paraview using the axis thickness
-  or set the lowest bound cell and highest bound cell and take difference
-  for the thickness
-  */
-
-/* extend into cell class to define the cell types
+/* Extend into cell class to define the cell types
 */
   BDM_SIM_OBJECT(MyCell, Cell) {
     BDM_SIM_OBJECT_HEADER(MyCellExt, 1, cellType);
@@ -40,43 +28,33 @@ namespace bdm {
     vec<int> cellType;
   };
 
-  /* List the extracellular substances
-
-  Part 2: substance will lead cell migration
-  use various concentration to lead the cell to meet
-
-  substance behavior is stated in a biology module
-
+  /*
+  External substance will lead cell migration based on the concentration
+  levels. Substance behavior is stated in a biology module
   */
  enum Substances { kSubstance };
 
   /*
-    part 3: create own function to create cells
+    Created own function to create cells
     so all cells will start from a fixed bound and then migrate
     based on the substance concentration
-
-    260318: revert back to this since the migration sort of works
   */
 
  template <typename Function, typename TResourceManager = ResourceManager<>>
  static void MyCellCreator(double min, double max, int num_cells, Function cell_builder) {
-   //int num_cells = 100;
   auto rm = TResourceManager::Get();
   // Determine simulation object type which is returned by the cell_builder
   using FunctionReturnType = decltype(cell_builder({0, 0, 0}));
 
   auto container = rm->template Get<FunctionReturnType>();
   container->reserve(num_cells);
-  //double min = 0;
-  //double max_x = 520;
-  //double max_y = 520;
 
   // so cells will be created at random only on the x and y axis
-  // in this project, ignore z axis
+  // z axis is used to move cells to final resting position
   for (int i = 0; i < num_cells; i++) {
     double x = gTRandom.Uniform(min, max);
     double y = gTRandom.Uniform(min, max);
-    //stop cells from moving in the z axis
+    //stop cells from moving in the z axis when generated
     double z = 0;
     auto new_simulation_object = cell_builder({x, y, z});
     container->push_back(new_simulation_object);
@@ -85,20 +63,12 @@ namespace bdm {
 }
 
 /*
-EDITS:
-210318
-simplifying model to check for memory allocation error
+  BiologyModules for each cell type - specifies the behaviours of each cell type
+*/
 
-220318
-simplifying model further to just 1 cell as the gradient thing is not correct
-cells only migrating along x axis and not y
-
-1643
-try adding another cell --> BUT CELL NOT MOVING
-Q: should try adding substance for each cell type?
-
-changing the concentration on the constructor changes the way the cells behave
-amacrine moves but not as expected...
+/*
+  Ganglion layer cells -> Assume only 1 type for the simplicity of model
+  Ganglion cells will link to amacrine and bipolar cells
 */
     struct ganglionCell : public BaseBiologyModule {
       ganglionCell() : BaseBiologyModule(gAllBmEvents){}
@@ -119,9 +89,6 @@ amacrine moves but not as expected...
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        /*
-          260318: TODO add stopping criteria for cells to stop migrating
-        */
         if(concentration < 0.00000072){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
@@ -138,8 +105,6 @@ amacrine moves but not as expected...
     Amacrine cells that are in the INNER LIMITING LAYER
     link bipolar and ganglion cells
     cell takes input from ganglion cell to bipolar cell
-    So for ganglion cells --> link to the MIDGET & BISTRATIFIED CELLS
-    Cells work laterally
     */
     struct amacrineCell : public BaseBiologyModule {
       amacrineCell() : BaseBiologyModule(gAllBmEvents){}
@@ -159,9 +124,7 @@ amacrine moves but not as expected...
         movement[0] = gradient_[0]*0.5;
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
-          /*
-            260318: TODO add stopping criteria for cells to stop migrating
-          */
+
           if(concentration < 0.00000067){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
@@ -175,8 +138,7 @@ amacrine moves but not as expected...
     };
 
     /*
-    260318: re-add and edited
-    bipolar cells
+    Bipolar cells
     exists between photoreceptors and ganglion cells
     so it will either synpase with:
     1. photoreceptors -> rods/ cones (i.e. Parasol cells)
@@ -252,7 +214,7 @@ amacrine moves but not as expected...
     /*cones
     part 2:
     cells are long but rounder and wider than rods
-    connect to horizontal cells + bipolar cells + Parasol cells? <check this>
+    connect to horizontal cells + bipolar cells
     */
     struct coneCell : public BaseBiologyModule {
       coneCell() : BaseBiologyModule(gAllBmEvents){}
@@ -289,7 +251,7 @@ amacrine moves but not as expected...
     /*rods
     part 2:
     cells are longish -> outer seg + inner seg + nucleus
-    connect to horizontal cells + bipolar cells + Parasol cells? <check this>
+    connect to horizontal cells + bipolar cells
     */
     struct rodCell : public BaseBiologyModule {
       rodCell() : BaseBiologyModule(gAllBmEvents){}
@@ -333,26 +295,23 @@ struct CompileTimeParam : public DefaultCompileTimeParam<Backend> {
 inline int Simulate(int argc, const char** argv) {
   InitializeBioDynamo(argc, argv);
 
-  /* this is to ensure that the model is reproducible for a
-  specific seed
-  part 2: TODO check what is a good value range for a seed to occur
+  /*
+    Params for Paraview
   */
-
   Param::bound_space_ = true;
   Param::min_bound_ = 0;
   //max bound is 250um
   Param::max_bound_ = 250;
   Param::run_mechanical_interactions_ = true;
 
-    int randSeed = rand() % 1000;
-    gTRandom.SetSeed(randSeed);
-    cout << "modelling seed: " << randSeed <<endl;
+  /* this is to ensure that the model is reproducible for a
+  specific seed
+  */
+  int randSeed = rand() % 1000;    gTRandom.SetSeed(randSeed);
+  cout << "modelling seed: " << randSeed <<endl;
 
-  /* Define initial model - in this example: single cell at origin
-  <s>Assume if we start from outer to inner retina --> start with RPE</s>
-
-  Part 2: should instead work from ganglion cells downwards
-  assume how the light rays fall onto the retina
+  /* Define cells to simulate:
+  the cell diameters, cell type and name will be defined here
   */
 
   auto construct_ganglion = [](const std::array<double, 3>& position) {
@@ -360,74 +319,46 @@ inline int Simulate(int argc, const char** argv) {
         //estimate gangliong cell diameter to be 11um
         cell.SetDiameter(11);
         cell.AddBiologyModule(ganglionCell());
-        //cell.SetCellType(6);
         cell.SetCellType(3);
         return cell;
       };
-      //CellCreator(Param::min_bound_, Param::max_bound_, 50, construct_bistratified);
     cout << "Ganglion cells created" << endl;
     MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_ganglion);
 
-    /*amacrine cells
-    part 2: This is in the inner limiting layer where it links to the
-    bipolar and ganglion cells
-    so it takes the input from the ganglion cell o the bipolar cell
-    So for ganglion cells --> link to the MIDGET & BISTRATIFIED CELLS
-    Cells work laterally
-    */
     auto construct_amacrine = [](const std::array<double, 3>& position){
         MyCell cell(position);
         //assume average dendritic field to be small/medium field as we are looking
         //at central ret so around 100um
         cell.SetDiameter(100);
         cell.AddBiologyModule(amacrineCell());
-        //cell.SetCellType(5);
         cell.SetCellType(6);
         return cell;
       };
     cout << "Amacrine cells created" << endl;
     MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_amacrine);
 
-    /*bipolar cells
-    part 2: exists between photoreceptors and ganglion cells
-    so it will either synpase with:
-    1. photoreceptors -> rods/ cones (i.e. Parasol cells)
-    2. horizontal cells
-    */
       auto construct_bipolar = [](const std::array<double, 3>& position){
         MyCell cell(position);
         //assume avg diamter using midget cone bipolar fmB and imB of 12um in 4.5mm region
         cell.SetDiameter(12);
         cell.AddBiologyModule(bipolarCell());
-        //cell.SetCellType(4);
         cell.SetCellType(4);
         return cell;
       };
       cout << "Bipolar cells created" << endl;
       MyCellCreator(Param::min_bound_, Param::max_bound_, 400, construct_bipolar);
 
-      /*horizontal cells
-      part 2:
-      cells work laterally
-      connected to outputs from rods and cones
-      */
       auto construct_horizontal = [](const std::array<double, 3>& position){
           MyCell cell(position);
           //assume avg diamter using H1 of 25um dentritic field in 2.5mm region
           cell.SetDiameter(25);
           cell.AddBiologyModule(horizontalCell());
-          //cell.SetCellType(3);
           cell.SetCellType(5);
           return cell;
       };
       cout << "Horizontal cells created" << endl;
       MyCellCreator(Param::min_bound_, Param::max_bound_, 200, construct_horizontal);
 
-    /*cones
-    part 2:
-    cells are long but rounder and wider than rods
-    connect to horizontal cells + bipolar cells + Parasol cells? <check this>
-    */
       auto construct_cone = [](const std::array<double, 3>& position){
         MyCell cell(position);
         //approximately 2um in foveal area
@@ -439,11 +370,6 @@ inline int Simulate(int argc, const char** argv) {
       cout << "Cone cells created" << endl;
       MyCellCreator(Param::min_bound_, Param::max_bound_, 250, construct_cone);
 
-    /*rods
-      part 2:
-      cells are longish -> outer seg + inner seg + nucleus
-      connect to horizontal cells + bipolar cells + Parasol cells? <check this>
-    */
       auto construct_rod = [](const std::array<double, 3>& position){
         MyCell cell(position);
         //approximately 2umn in diameter
@@ -459,11 +385,7 @@ inline int Simulate(int argc, const char** argv) {
     //diffusion coefficient of 0.5, a decay constant 0f 0.1 and a resolution of 1
     ModelInitializer::DefineSubstance(kSubstance, "kSubstance", 0.5, 0.1, 4);
     //initialise substance: enum of substance, name, function type used
-    //mean value of 120 along the x-axis, and a variance of 5
-    //along which axis (0 = x, 1 = y, 2 = z). See the documentation of `GaussianBand` for
-    //information about its arguments
-    // ModelInitializer::InitializeSubstance(kSubstance, "Substance",
-    //                                         GaussianBand(120, 5, Axis::kXAxis));
+    //mean value of 200 along the z-axis, and a variance of 100
     ModelInitializer::InitializeSubstance(kSubstance, "kSubstance",
                                             GaussianBand(200, 100, Axis::kZAxis));
 
@@ -472,7 +394,6 @@ inline int Simulate(int argc, const char** argv) {
     Param::live_visualization_ = true;
     Param::export_visualization_ = true;
     Param::visualization_export_interval_ = 2;
-    //Param::visualize_sim_objects_["MyCell"] = std::set<std::string>{"diameter_"};
     Param::visualize_sim_objects_["MyCell"] = std::set<std::string>{"cellType"};
 
   // Run simulation for one timestep
