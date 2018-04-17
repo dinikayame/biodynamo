@@ -89,7 +89,7 @@ namespace bdm {
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if(concentration < 0.00000072){
+        if(concentration < 0.0000025){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -125,7 +125,7 @@ namespace bdm {
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-          if(concentration < 0.00000067){
+          if(concentration < 0.0000002){
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -163,7 +163,7 @@ namespace bdm {
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.00000055) {
+        if (concentration < 0.000000045) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -199,7 +199,7 @@ namespace bdm {
         movement[1] = gradient_[1]*0.5;
         movement[2] = gradient_[2]*0.5;
 
-        if (concentration < 0.000000095) {
+        if (concentration < 0.000000037) {
           cell->UpdatePosition(movement);
           cell->SetPosition(cell->GetMassLocation());
         }
@@ -319,7 +319,7 @@ inline int Simulate(int argc, const char** argv) {
         //estimate gangliong cell diameter to be 11um
         cell.SetDiameter(11);
         cell.AddBiologyModule(ganglionCell());
-        cell.SetCellType(3);
+        cell.SetCellType(6);
         return cell;
       };
     cout << "Ganglion cells created" << endl;
@@ -329,9 +329,11 @@ inline int Simulate(int argc, const char** argv) {
         MyCell cell(position);
         //assume average dendritic field to be small/medium field as we are looking
         //at central ret so around 100um
-        cell.SetDiameter(100);
+        //170418 --> ignore the dendtritic fields, estimate cell diameter
+        //approx 8.75
+        cell.SetDiameter(9);
         cell.AddBiologyModule(amacrineCell());
-        cell.SetCellType(6);
+        cell.SetCellType(5);
         return cell;
       };
     cout << "Amacrine cells created" << endl;
@@ -340,7 +342,8 @@ inline int Simulate(int argc, const char** argv) {
       auto construct_bipolar = [](const std::array<double, 3>& position){
         MyCell cell(position);
         //assume avg diamter using midget cone bipolar fmB and imB of 12um in 4.5mm region
-        cell.SetDiameter(12);
+
+        cell.SetDiameter(9);
         cell.AddBiologyModule(bipolarCell());
         cell.SetCellType(4);
         return cell;
@@ -351,9 +354,10 @@ inline int Simulate(int argc, const char** argv) {
       auto construct_horizontal = [](const std::array<double, 3>& position){
           MyCell cell(position);
           //assume avg diamter using H1 of 25um dentritic field in 2.5mm region
-          cell.SetDiameter(25);
+          //170418 --> changed to estimated cell diameter 7.5
+          cell.SetDiameter(8);
           cell.AddBiologyModule(horizontalCell());
-          cell.SetCellType(5);
+          cell.SetCellType(3);
           return cell;
       };
       cout << "Horizontal cells created" << endl;
@@ -364,7 +368,7 @@ inline int Simulate(int argc, const char** argv) {
         //approximately 2um in foveal area
         cell.SetDiameter(2);
         cell.AddBiologyModule(coneCell());
-        cell.SetCellType(2);
+        cell.SetCellType(1);
         return cell;
       };
       cout << "Cone cells created" << endl;
@@ -375,7 +379,7 @@ inline int Simulate(int argc, const char** argv) {
         //approximately 2umn in diameter
         cell.SetDiameter(2);
         cell.AddBiologyModule(rodCell());
-        cell.SetCellType(1);
+        cell.SetCellType(2);
         return cell;
       };
       cout << "Rod cells created" << endl;
@@ -398,7 +402,7 @@ inline int Simulate(int argc, const char** argv) {
 
   // Run simulation for one timestep
   Scheduler<> scheduler;
-  int maxStep = 2000;
+  int maxStep = 1800;
   for (int i = 0; i < maxStep; i++){
     scheduler.Simulate(1);
   }
